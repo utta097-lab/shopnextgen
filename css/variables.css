@@ -1,0 +1,75 @@
+/* ==========================================================================
+   SHOPNEX Design System Variables
+   Modern, high-trust Indian marketplace aesthetic
+   ========================================================================== */
+
+:root {
+  /* Brand Core Colors */
+  --snx-primary: #1e3a8a;          /* Rich Royal Navy */
+  --snx-primary-dark: #0f172a;     /* Deep Slate / Charcoal */
+  --snx-primary-light: #2563eb;    /* Electric Royal Blue */
+  --snx-primary-subtle: #eff6ff;   /* Soft Blue Tint */
+
+  /* Accent & Action Colors */
+  --snx-accent: #ff4757;           /* Vibrant Coral / Deal Red */
+  --snx-accent-hover: #e0283b;
+  --snx-accent-light: #fff1f2;
+  --snx-warning: #f59e0b;          /* Star Rating Gold / Amber */
+  --snx-warning-light: #fef3c7;
+  --snx-success: #10b981;          /* Discount Green & In-Stock */
+  --snx-success-dark: #047857;
+  --snx-success-light: #ecfdf5;
+
+  /* Neutrals & Surfaces */
+  --snx-bg: #f1f5f9;               /* Subtle page background */
+  --snx-surface: #ffffff;          /* Card & Section white */
+  --snx-surface-elevated: #ffffff;
+  --snx-border: #e2e8f0;           /* Soft hairline borders */
+  --snx-border-light: #f1f5f9;
+  --snx-border-strong: #cbd5e1;
+
+  /* Typography Colors */
+  --snx-text-main: #0f172a;        /* 900 slate */
+  --snx-text-body: #334155;        /* 700 slate */
+  --snx-text-muted: #64748b;       /* 500 slate */
+  --snx-text-light: #94a3b8;       /* 400 slate */
+  --snx-text-inverse: #ffffff;
+
+  /* Font Families */
+  --snx-font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --snx-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Shadows */
+  --snx-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --snx-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --snx-shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.05);
+  --snx-shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.1), 0 4px 10px -4px rgba(15, 23, 42, 0.06);
+  --snx-shadow-xl: 0 20px 35px -5px rgba(15, 23, 42, 0.15), 0 8px 16px -6px rgba(15, 23, 42, 0.1);
+  --snx-shadow-product-hover: 0 14px 28px rgba(15, 23, 42, 0.12), 0 6px 12px rgba(15, 23, 42, 0.08);
+
+  /* Radii */
+  --snx-radius-xs: 4px;
+  --snx-radius-sm: 6px;
+  --snx-radius-md: 10px;
+  --snx-radius-lg: 14px;
+  --snx-radius-xl: 20px;
+  --snx-radius-full: 9999px;
+
+  /* Layout Constants */
+  --snx-max-width: 1440px;
+  --snx-header-height: 72px;
+  --snx-catbar-height: 52px;
+  --snx-mobile-bottom-height: 60px;
+
+  /* Transitions */
+  --snx-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --snx-transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --snx-transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-Indices */
+  --snx-z-dropdown: 1000;
+  --snx-z-sticky: 1020;
+  --snx-z-modal-backdrop: 1040;
+  --snx-z-modal: 1050;
+  --snx-z-toast: 1090;
+}

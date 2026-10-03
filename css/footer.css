@@ -1,0 +1,178 @@
+/* ==========================================================================
+   SHOPNEX Multi-Column Footer Styles
+   ========================================================================== */
+
+.snx-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  margin-top: auto;
+  border-top: 1px solid #1e293b;
+}
+
+/* Newsletter Strip */
+.snx-footer-newsletter-strip {
+  background: #1e293b;
+  padding: 32px 0;
+  border-bottom: 1px solid #334155;
+}
+
+.snx-newsletter-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.snx-newsletter-text h3 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.snx-newsletter-text p {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.snx-newsletter-form {
+  display: flex;
+  max-width: 440px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: var(--snx-radius-sm);
+  overflow: hidden;
+  padding: 2px;
+}
+
+.snx-newsletter-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: var(--snx-text-main);
+}
+
+.snx-newsletter-btn {
+  background: var(--snx-primary-light);
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: var(--snx-radius-xs);
+  transition: background var(--snx-transition-fast);
+}
+
+.snx-newsletter-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Main Footer Columns */
+.snx-footer-main {
+  padding: 48px 0 36px;
+}
+
+.snx-footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(4, 1fr);
+  gap: 36px;
+}
+
+.snx-footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.snx-footer-brand-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.snx-footer-brand-title span {
+  color: var(--snx-primary-light);
+}
+
+.snx-footer-brand-desc {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.snx-footer-col h4 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.snx-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.snx-footer-links a {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  transition: color var(--snx-transition-fast);
+}
+
+.snx-footer-links a:hover {
+  color: #ffffff;
+  padding-left: 2px;
+}
+
+/* Bottom Bar */
+.snx-footer-bottom {
+  border-top: 1px solid #1e293b;
+  padding: 20px 0;
+  background: #090d16;
+}
+
+.snx-footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.8125rem;
+}
+
+.snx-payment-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.snx-payment-chip {
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: var(--snx-radius-xs);
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 992px) {
+  .snx-footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .snx-footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .snx-footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}

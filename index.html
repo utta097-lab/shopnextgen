@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SHOPNEX - Exclusive Custom Product Showcase and Marketplace featuring verified original collections, custom media, and high-speed checkout.">
+  <meta name="theme-color" content="#1e3a8a">
+  <title>SHOPNEX — Custom Product Showcase & Marketplace</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Design System & Components CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/product-card.css">
+  <link rel="stylesheet" href="css/catalog.css">
+  <link rel="stylesheet" href="css/product-details.css">
+  <link rel="stylesheet" href="css/cart.css">
+  <link rel="stylesheet" href="css/checkout.css">
+  <link rel="stylesheet" href="css/account.css">
+  <link rel="stylesheet" href="css/seller.css">
+  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+
+  <!-- Dynamic Header & Category Navigation Mount -->
+  <div id="snx-header-mount"></div>
+
+  <!-- Primary Application View Mount -->
+  <main id="snx-app-mount">
+    <!-- Initial Skeleton Preloader -->
+    <div class="snx-container" style="padding: 30px 20px;">
+      <div class="snx-skeleton" style="height: 380px; width: 100%; border-radius: 16px; margin-bottom: 24px;"></div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div class="snx-skeleton" style="height: 320px; border-radius: 12px;"></div>
+        <div class="snx-skeleton" style="height: 320px; border-radius: 12px;"></div>
+        <div class="snx-skeleton" style="height: 320px; border-radius: 12px;"></div>
+        <div class="snx-skeleton" style="height: 320px; border-radius: 12px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Multi-Column Footer -->
+  <footer class="snx-footer">
+    <!-- Newsletter Strip -->
+    <div class="snx-footer-newsletter-strip">
+      <div class="snx-container">
+        <div class="snx-newsletter-content">
+          <div class="snx-newsletter-text">
+            <h3>Get the Best Deals Delivered to Your Inbox</h3>
+            <p>Join 2.5 million+ smart shoppers receiving exclusive festival discounts and early flash access.</p>
+          </div>
+          <form class="snx-newsletter-form" id="snx-newsletter-form">
+            <input type="email" id="snx-newsletter-email" class="snx-newsletter-input" placeholder="Enter your email address" required>
+            <button type="submit" class="snx-newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Footer Links Grid -->
+    <div class="snx-footer-main">
+      <div class="snx-container">
+        <div class="snx-footer-grid">
+          <!-- Col 1: Brand Info -->
+          <div class="snx-footer-brand-col">
+            <div class="snx-footer-brand-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              SHOPNEX<span>.in</span>
+            </div>
+            <p class="snx-footer-brand-desc">
+              SHOPNEX is an Indian digital commerce marketplace connecting millions of customers with top global brands and verified local merchants across India.
+            </p>
+            <div style="font-size: 0.8125rem; color: #64748b;">
+              Registered Office: Prestige Cyber Towers, Electronic City Phase 1, Bengaluru, Karnataka - 560100, India.
+            </div>
+          </div>
+
+          <!-- Col 2: About -->
+          <div class="snx-footer-col">
+            <h4>About Shopnex</h4>
+            <div class="snx-footer-links">
+              <a href="#/seller">About Us</a>
+              <a href="#/seller">Careers</a>
+              <a href="#/seller">Press Releases</a>
+              <a href="#/seller">Corporate Information</a>
+              <a href="#/seller">Become a Seller</a>
+            </div>
+          </div>
+
+          <!-- Col 3: Help -->
+          <div class="snx-footer-col">
+            <h4>Help & Support</h4>
+            <div class="snx-footer-links">
+              <a href="#/account?tab=payments">Payments Info</a>
+              <a href="#/account?tab=orders">Shipping & Delivery</a>
+              <a href="#/account?tab=help">Cancellation & Returns</a>
+              <a href="#/account?tab=help">Frequently Asked Questions</a>
+              <a href="#/account?tab=help">Report Infringement</a>
+            </div>
+          </div>
+
+          <!-- Col 4: Consumer Policy -->
+          <div class="snx-footer-col">
+            <h4>Consumer Policy</h4>
+            <div class="snx-footer-links">
+              <a href="#/account?tab=help">Terms of Use</a>
+              <a href="#/account?tab=help">Security & Fraud Prevention</a>
+              <a href="#/account?tab=help">Privacy Policy</a>
+              <a href="#/account?tab=help">Grievance Officer</a>
+              <a href="#/catalog">Marketplace Sitemap</a>
+            </div>
+          </div>
+
+          <!-- Col 5: Social -->
+          <div class="snx-footer-col">
+            <h4>Connect with Us</h4>
+            <div class="snx-footer-links">
+              <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+              <a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a>
+              <a href="https://x.com" target="_blank" rel="noopener">X (Twitter)</a>
+              <a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="snx-footer-bottom">
+      <div class="snx-container">
+        <div class="snx-footer-bottom-inner">
+          <div>
+            © 2026 SHOPNEX Marketplace India Private Limited. All rights reserved.
+          </div>
+          <div class="snx-payment-badges-row">
+            <span style="font-size: 0.75rem; color: #64748b;">Accepted Payments:</span>
+            <span class="snx-payment-chip">UPI / QR</span>
+            <span class="snx-payment-chip">RuPay</span>
+            <span class="snx-payment-chip">Visa</span>
+            <span class="snx-payment-chip">Mastercard</span>
+            <span class="snx-payment-chip">NetBanking</span>
+            <span class="snx-payment-chip">Cash on Delivery</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Mount -->
+  <div id="snx-toast-container"></div>
+
+  <!-- Main Modular JavaScript App -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

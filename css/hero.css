@@ -1,0 +1,312 @@
+/* ==========================================================================
+   SHOPNEX Hero Promotional Section & Carousel
+   ========================================================================== */
+
+.snx-hero-section {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.snx-hero-carousel {
+  position: relative;
+  border-radius: var(--snx-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--snx-shadow-md);
+  background: #0f172a;
+}
+
+.snx-hero-slides-wrapper {
+  display: flex;
+  transition: transform var(--snx-transition-smooth);
+  width: 100%;
+}
+
+.snx-hero-slide {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 44px 56px;
+  min-height: 380px;
+}
+
+/* Gradient Themes */
+.hero-gradient-blue {
+  background: linear-gradient(135deg, #0b132b 0%, #1c2541 40%, #1e3a8a 100%);
+}
+
+.hero-gradient-purple {
+  background: linear-gradient(135deg, #1f1135 0%, #3b185f 45%, #7027a0 100%);
+}
+
+.hero-gradient-emerald {
+  background: linear-gradient(135deg, #062828 0%, #064e3b 45%, #059669 100%);
+}
+
+.snx-hero-content {
+  flex: 1;
+  max-width: 580px;
+  z-index: 2;
+  color: #ffffff;
+}
+
+.snx-hero-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  background: var(--snx-accent);
+  color: #ffffff;
+  border-radius: var(--snx-radius-full);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
+}
+
+.snx-hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.snx-hero-subtitle {
+  font-size: 1.125rem;
+  color: #e2e8f0;
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+
+.snx-hero-offer-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 8px 14px;
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fef08a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 24px;
+}
+
+.snx-hero-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: var(--snx-radius-sm);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-hero-cta-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  color: var(--snx-primary-light);
+}
+
+.snx-hero-image-wrap {
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 440px;
+  height: 300px;
+  border-radius: var(--snx-radius-md);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.snx-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.snx-hero-slide:hover .snx-hero-image {
+  transform: scale(1.04);
+}
+
+/* Hero Controls */
+.snx-hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  color: var(--snx-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: var(--snx-shadow-md);
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-hero-arrow:hover {
+  background: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.snx-hero-arrow.prev { left: 18px; }
+.snx-hero-arrow.next { right: 18px; }
+
+.snx-hero-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.snx-hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-hero-dot.active {
+  background: #ffffff;
+  width: 24px;
+  border-radius: var(--snx-radius-full);
+}
+
+/* Trust & Perks Bar Below Hero */
+.snx-perks-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: var(--snx-radius-md);
+  margin-top: 14px;
+  border: 1px solid var(--snx-border);
+}
+
+.snx-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.snx-perk-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--snx-radius-md);
+  background: var(--snx-primary-subtle);
+  color: var(--snx-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.snx-perk-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--snx-text-main);
+  line-height: 1.2;
+}
+
+.snx-perk-desc {
+  font-size: 0.75rem;
+  color: var(--snx-text-muted);
+}
+
+/* Deals Countdown Strip */
+.snx-deals-countdown-strip {
+  background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: var(--snx-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  margin-top: 24px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.snx-deals-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.snx-deals-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.snx-timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 10px;
+  border-radius: var(--snx-radius-sm);
+  font-family: var(--snx-font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fef08a;
+}
+
+@media (max-width: 992px) {
+  .snx-hero-image-wrap {
+    display: none;
+  }
+  .snx-hero-slide {
+    padding: 36px 30px;
+    min-height: 320px;
+  }
+  .snx-hero-title {
+    font-size: 2rem;
+  }
+  .snx-perks-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .snx-hero-slide {
+    padding: 24px 18px;
+    min-height: 280px;
+  }
+  .snx-hero-title {
+    font-size: 1.5rem;
+  }
+  .snx-hero-subtitle {
+    font-size: 0.9375rem;
+  }
+  .snx-perks-bar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .snx-deals-countdown-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

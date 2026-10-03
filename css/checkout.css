@@ -1,0 +1,403 @@
+/* ==========================================================================
+   SHOPNEX Multi-Step Checkout Styles
+   Clean, secure, high-trust Indian checkout flow
+   ========================================================================== */
+
+.snx-checkout-page {
+  padding-top: 24px;
+  padding-bottom: 60px;
+}
+
+/* Stepper Progress Bar */
+.snx-checkout-stepper {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.snx-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snx-text-muted);
+  position: relative;
+  z-index: 2;
+}
+
+.snx-step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: var(--snx-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-step-item.active {
+  color: var(--snx-primary-light);
+}
+
+.snx-step-item.active .snx-step-number {
+  background: var(--snx-primary-light);
+  color: #ffffff;
+}
+
+.snx-step-item.completed {
+  color: var(--snx-success);
+}
+
+.snx-step-item.completed .snx-step-number {
+  background: var(--snx-success);
+  color: #ffffff;
+}
+
+/* Checkout 2-Column Layout */
+.snx-checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Checkout Step Card */
+.snx-checkout-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.snx-checkout-card-header {
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--snx-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.snx-checkout-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--snx-text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.snx-checkout-card-body {
+  padding: 20px;
+}
+
+/* Step 1: Address Cards Grid */
+.snx-addresses-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snx-address-card-choice {
+  border: 1.5px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+  cursor: pointer;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-address-card-choice.selected {
+  border-color: var(--snx-primary-light);
+  background: var(--snx-primary-subtle);
+}
+
+.snx-address-card-choice input[type="radio"] {
+  accent-color: var(--snx-primary-light);
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.snx-address-text-group {
+  flex: 1;
+}
+
+.snx-address-header-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.snx-address-user-name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--snx-text-main);
+}
+
+.snx-address-type-tag {
+  background: #e2e8f0;
+  color: var(--snx-text-main);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--snx-radius-xs);
+  text-transform: uppercase;
+}
+
+.snx-address-body-text {
+  font-size: 0.875rem;
+  color: var(--snx-text-body);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.snx-address-phone {
+  font-size: 0.8125rem;
+  color: var(--snx-text-muted);
+}
+
+.snx-deliver-here-btn {
+  margin-top: 10px;
+  background: #fbbf24;
+  color: #78350f;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.875rem;
+}
+
+/* Step 2: Order Items Summary Table */
+.snx-summary-item-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--snx-border-light);
+}
+
+.snx-summary-item-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: var(--snx-radius-xs);
+  background: #f8fafc;
+}
+
+.snx-summary-item-info {
+  flex: 1;
+}
+
+.snx-summary-item-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snx-text-main);
+}
+
+.snx-summary-item-qty {
+  font-size: 0.75rem;
+  color: var(--snx-text-muted);
+}
+
+.snx-summary-item-price {
+  font-weight: 700;
+  color: var(--snx-text-main);
+}
+
+/* Step 3: Payment Accordion */
+.snx-payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snx-payment-method-item {
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-sm);
+  overflow: hidden;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-payment-method-item.selected {
+  border-color: var(--snx-primary-light);
+}
+
+.snx-payment-header {
+  padding: 14px 16px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--snx-text-main);
+}
+
+.snx-payment-header input[type="radio"] {
+  accent-color: var(--snx-primary-light);
+  width: 18px;
+  height: 18px;
+}
+
+.snx-payment-content {
+  padding: 16px;
+  background: #f8fafc;
+  border-top: 1px solid var(--snx-border);
+  display: none;
+}
+
+.snx-payment-method-item.selected .snx-payment-content {
+  display: block;
+}
+
+/* UPI Option Controls */
+.snx-upi-apps-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.snx-upi-app-btn {
+  flex: 1;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-upi-app-btn.active {
+  border-color: var(--snx-primary-light);
+  background: var(--snx-primary-subtle);
+  color: var(--snx-primary-light);
+}
+
+/* Form inputs for Card and UPI */
+.snx-form-group {
+  margin-bottom: 12px;
+}
+
+.snx-form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snx-text-main);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.snx-form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--snx-border-strong);
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.875rem;
+  background: #ffffff;
+}
+
+.snx-form-input:focus {
+  border-color: var(--snx-primary-light);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.snx-card-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Order Success Celebration Container */
+.snx-order-success-view {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-lg);
+  padding: 48px 32px;
+  text-align: center;
+  max-width: 680px;
+  margin: 20px auto;
+  box-shadow: var(--snx-shadow-md);
+}
+
+.snx-success-check-circle {
+  width: 72px;
+  height: 72px;
+  background: var(--snx-success-light);
+  color: var(--snx-success);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  animation: snxSuccessPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes snxSuccessPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  80% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.snx-success-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--snx-text-main);
+  margin-bottom: 8px;
+}
+
+.snx-success-sub {
+  font-size: 1rem;
+  color: var(--snx-text-muted);
+  margin-bottom: 24px;
+}
+
+.snx-order-receipt-box {
+  background: #f8fafc;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 20px;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.snx-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.875rem;
+  color: var(--snx-text-body);
+}
+
+.snx-receipt-row strong {
+  color: var(--snx-text-main);
+}
+
+.snx-success-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .snx-checkout-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,246 @@
+/* ==========================================================================
+   SHOPNEX Seller Hub & Merchant Dashboard Styles
+   ========================================================================== */
+
+.snx-seller-page {
+  padding-top: 24px;
+  padding-bottom: 60px;
+}
+
+.snx-seller-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.snx-seller-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--snx-text-main);
+}
+
+.snx-seller-subtitle {
+  font-size: 0.875rem;
+  color: var(--snx-text-muted);
+}
+
+/* Metric Cards */
+.snx-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.snx-metric-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--snx-shadow-xs);
+}
+
+.snx-metric-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--snx-radius-md);
+  background: var(--snx-primary-subtle);
+  color: var(--snx-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.snx-metric-icon.rev {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.snx-metric-icon.orders {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.snx-metric-icon.prods {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.snx-metric-icon.rating {
+  background: #fdf2f8;
+  color: #db2777;
+}
+
+.snx-metric-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--snx-text-main);
+  line-height: 1.1;
+}
+
+.snx-metric-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snx-text-muted);
+}
+
+/* Inventory Table Card */
+.snx-inventory-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 20px;
+  box-shadow: var(--snx-shadow-xs);
+  margin-bottom: 24px;
+}
+
+.snx-card-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.snx-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.snx-seller-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.snx-seller-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--snx-text-muted);
+  border-bottom: 1px solid var(--snx-border);
+}
+
+.snx-seller-table td {
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--snx-border-light);
+  color: var(--snx-text-body);
+}
+
+.snx-prod-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.snx-prod-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: var(--snx-radius-xs);
+  background: #f8fafc;
+  padding: 2px;
+}
+
+.snx-prod-name {
+  font-weight: 600;
+  color: var(--snx-text-main);
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snx-status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--snx-radius-full);
+}
+
+.snx-status-pill.active {
+  background: var(--snx-success-light);
+  color: var(--snx-success-dark);
+}
+
+.snx-status-pill.low {
+  background: var(--snx-warning-light);
+  color: var(--snx-warning);
+}
+
+@media (max-width: 992px) {
+  .snx-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .snx-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Audio Uploader & Media Options Styles */
+.snx-audio-uploader-card {
+  background: #ffffff;
+  border: 1.5px solid #c7d2fe;
+  border-radius: var(--snx-radius-md);
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.08);
+  margin-bottom: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+}
+
+.snx-audio-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.snx-audio-card-badge {
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.snx-format-pill {
+  display: inline-block;
+  background: #ede9fe;
+  color: #6d28d9;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.snx-media-options-box {
+  background: #f8fafc;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.snx-media-option-item {
+  margin-bottom: 16px;
+}
+
+.snx-media-option-item:last-child {
+  margin-bottom: 0;
+}

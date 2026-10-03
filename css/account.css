@@ -1,0 +1,319 @@
+/* ==========================================================================
+   SHOPNEX User Account Dashboard & Orders Styles
+   ========================================================================== */
+
+.snx-account-page {
+  padding-top: 24px;
+  padding-bottom: 60px;
+}
+
+.snx-account-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Left Sidebar */
+.snx-account-nav-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  overflow: hidden;
+}
+
+.snx-account-user-banner {
+  padding: 20px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--snx-border);
+}
+
+.snx-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--snx-primary-light);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.snx-user-nav-name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--snx-text-main);
+}
+
+.snx-user-nav-sub {
+  font-size: 0.75rem;
+  color: var(--snx-text-muted);
+}
+
+.snx-account-nav-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.snx-account-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snx-text-body);
+  border-bottom: 1px solid var(--snx-border-light);
+  transition: all var(--snx-transition-fast);
+  cursor: pointer;
+  text-align: left;
+}
+
+.snx-account-nav-btn:hover {
+  background: #f1f5f9;
+  color: var(--snx-primary-light);
+}
+
+.snx-account-nav-btn.active {
+  background: var(--snx-primary-subtle);
+  color: var(--snx-primary-light);
+  font-weight: 700;
+  border-left: 4px solid var(--snx-primary-light);
+}
+
+/* Main Content Panel */
+.snx-account-content-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 24px;
+}
+
+.snx-panel-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--snx-text-main);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--snx-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ==========================================================================
+   Order Card & Tracking Visual Timeline
+   ========================================================================== */
+.snx-order-card {
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.snx-order-header {
+  background: #f8fafc;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--snx-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.snx-order-id-group {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.snx-order-id-text {
+  font-weight: 700;
+  color: var(--snx-text-main);
+  font-size: 0.9375rem;
+}
+
+.snx-order-date {
+  font-size: 0.8125rem;
+  color: var(--snx-text-muted);
+}
+
+.snx-order-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--snx-radius-xs);
+  text-transform: uppercase;
+}
+
+.snx-order-status-badge.delivered {
+  background: var(--snx-success-light);
+  color: var(--snx-success-dark);
+}
+
+.snx-order-status-badge.shipped {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.snx-order-status-badge.ordered {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Order Item Row */
+.snx-order-item-wrap {
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid var(--snx-border-light);
+}
+
+.snx-order-item-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: var(--snx-radius-xs);
+  background: #f8fafc;
+  padding: 4px;
+}
+
+.snx-order-item-info {
+  flex: 1;
+}
+
+.snx-order-item-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--snx-text-main);
+  margin-bottom: 4px;
+}
+
+.snx-order-item-price {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--snx-text-main);
+}
+
+/* Visual Tracking Timeline */
+.snx-tracking-timeline {
+  padding: 20px;
+  background: #fafafa;
+}
+
+.snx-timeline-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--snx-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.snx-timeline-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 10px;
+}
+
+.snx-timeline-steps::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.snx-timeline-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.snx-timeline-node {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  margin-bottom: 8px;
+  transition: all var(--snx-transition-fast);
+}
+
+.snx-timeline-step.completed .snx-timeline-node {
+  background: var(--snx-success);
+  border-color: var(--snx-success);
+}
+
+.snx-timeline-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--snx-text-muted);
+}
+
+.snx-timeline-step.completed .snx-timeline-label {
+  color: var(--snx-text-main);
+}
+
+.snx-timeline-date {
+  font-size: 0.6875rem;
+  color: var(--snx-text-light);
+}
+
+.snx-order-footer {
+  padding: 12px 20px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--snx-border);
+}
+
+/* Saved Addresses Section in Account */
+.snx-addresses-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.snx-addr-card {
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.snx-addr-card.default {
+  border-color: var(--snx-primary-light);
+  background: #fcfdff;
+}
+
+.snx-addr-actions {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .snx-account-layout {
+    grid-template-columns: 1fr;
+  }
+  .snx-addresses-container {
+    grid-template-columns: 1fr;
+  }
+}

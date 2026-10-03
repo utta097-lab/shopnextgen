@@ -236,7 +236,7 @@ export function renderCheckoutPage(container) {
                         </div>
                         <div class="snx-form-group">
                           <label class="snx-form-label" for="upi-vpa-in">Or Enter UPI ID / VPA</label>
-                          <input type="text" id="upi-vpa-in" class="snx-form-input" placeholder="e.g. yourname@oksbi" value="soham@okaxis">
+                          <input type="text" id="upi-vpa-in" class="snx-form-input" placeholder="e.g. yourname@oksbi" value="modon@okaxis">
                         </div>
                       </div>
                     </div>

@@ -242,7 +242,7 @@ export function renderAccountPage(container, initialTab = 'orders') {
           <div style="border: 1px solid var(--snx-border); padding: 16px; border-radius: var(--snx-radius-md); display: flex; align-items: center; justify-content: space-between;">
             <div>
               <div style="font-weight: 700; font-size: 0.9375rem;">Google Pay UPI</div>
-              <div style="font-size: 0.8125rem; color: var(--snx-text-muted);">soham@okaxis • Primary</div>
+              <div style="font-size: 0.8125rem; color: var(--snx-text-muted);">modon@okaxis • Primary</div>
             </div>
             <span class="snx-badge snx-badge-discount">Verified</span>
           </div>
@@ -291,7 +291,7 @@ export function renderAccountPage(container, initialTab = 'orders') {
               <h4 style="font-size: 1rem; color: var(--snx-primary); font-weight: 700;">Need immediate assistance?</h4>
               <p style="font-size: 0.8125rem; color: var(--snx-text-muted);">Our customer care executive is available 24x7</p>
             </div>
-            <button type="button" class="snx-btn snx-btn-primary" onclick="alert('Connecting to SHOPNEX 24x7 Support Executive Soham Dutta... Toll Free: 1800-420-7467')">
+            <button type="button" class="snx-btn snx-btn-primary" onclick="alert('Connecting to SHOPNEX 24x7 Support Executive Mr Modon Pal... Toll Free: 1800-420-7467')">
               Call Support: 1800-420-SHOP
             </button>
           </div>

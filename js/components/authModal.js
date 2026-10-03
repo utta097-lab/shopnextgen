@@ -59,12 +59,12 @@ export function openAuthModal(initialTab = 'login') {
         <form id="snx-register-form">
           <div class="snx-form-group">
             <label class="snx-form-label" for="reg-name">Full Name</label>
-            <input type="text" id="reg-name" class="snx-form-input" placeholder="e.g. Soham Dutta" required>
+            <input type="text" id="reg-name" class="snx-form-input" placeholder="e.g. Mr Modon Pal" required>
           </div>
 
           <div class="snx-form-group">
             <label class="snx-form-label" for="reg-id">Mobile Number or Email</label>
-            <input type="text" id="reg-id" class="snx-form-input" placeholder="e.g. 9876543210 or soham@example.com" required>
+            <input type="text" id="reg-id" class="snx-form-input" placeholder="e.g. 9876543210 or modon@example.com" required>
           </div>
 
           <button type="submit" class="snx-btn snx-btn-primary snx-btn-block" style="margin-top: 8px;">
@@ -138,8 +138,8 @@ export function openAuthModal(initialTab = 'login') {
     const demoBtn = document.getElementById('snx-quick-demo-login');
     if (demoBtn) {
       demoBtn.addEventListener('click', () => {
-        store.login('soham.dutta@shopnex.in', 'Soham Dutta');
-        showToast('Logged in successfully as Soham Dutta!', 'success');
+        store.login('modon.pal@shopnex.in', 'Mr Modon Pal');
+        showToast('Logged in successfully as Mr Modon Pal!', 'success');
         authBackdrop.classList.remove('open');
       });
     }
@@ -152,7 +152,7 @@ export function openAuthModal(initialTab = 'login') {
         const idVal = document.getElementById('auth-input-id').value.trim();
         if (idVal) {
           pendingIdentifier = idVal;
-          pendingName = "Soham Dutta";
+          pendingName = "Mr Modon Pal";
           currentTab = 'otp';
           renderModalContent();
           showToast(`OTP sent to ${idVal}. Use 1234.`, 'info');
@@ -182,7 +182,7 @@ export function openAuthModal(initialTab = 'login') {
     if (otpForm) {
       otpForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        store.login(pendingIdentifier || 'soham.dutta@shopnex.in', pendingName || 'Soham Dutta');
+        store.login(pendingIdentifier || 'modon.pal@shopnex.in', pendingName || 'Mr Modon Pal');
         showToast(`Welcome back, ${store.user.name}!`, 'success');
         authBackdrop.classList.remove('open');
       });

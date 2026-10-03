@@ -16,14 +16,14 @@ const STORAGE_KEYS = {
 
 const DEFAULT_USER = {
   isLoggedIn: true,
-  name: "Soham Dutta",
-  email: "soham.dutta@shopnex.in",
+  name: "Mr Modon Pal",
+  email: "modon.pal@shopnex.in",
   phone: "+91 98765 43210",
   gender: "Male",
   addresses: [
     {
       id: "addr-1",
-      name: "Soham Dutta",
+      name: "Mr Modon Pal",
       phone: "+91 98765 43210",
       pincode: "560100",
       locality: "Electronic City Phase 1",
@@ -60,7 +60,20 @@ class Store {
   loadFromStorage(key, fallback) {
     try {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : fallback;
+      if (!data) return fallback;
+      const parsed = JSON.parse(data);
+      // Automatically migrate any legacy cached name to Mr Modon Pal
+      if (key === STORAGE_KEYS.USER && parsed) {
+        if (parsed.name === "Soham Dutta") parsed.name = "Mr Modon Pal";
+        if (parsed.email === "soham.dutta@shopnex.in") parsed.email = "modon.pal@shopnex.in";
+        if (Array.isArray(parsed.addresses)) {
+          parsed.addresses.forEach(a => {
+            if (a.name === "Soham Dutta") a.name = "Mr Modon Pal";
+          });
+        }
+        localStorage.setItem(key, JSON.stringify(parsed));
+      }
+      return parsed;
     } catch (e) {
       console.warn("Storage load error", e);
       return fallback;
@@ -492,7 +505,7 @@ class Store {
   }
 
   // --- AUTH MOCK ---
-  login(emailOrPhone, name = "Soham Dutta") {
+  login(emailOrPhone, name = "Mr Modon Pal") {
     this.user.isLoggedIn = true;
     this.user.name = name;
     this.user.email = emailOrPhone.includes('@') ? emailOrPhone : this.user.email;

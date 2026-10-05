@@ -430,8 +430,8 @@ function openAddProductModal(onSuccess) {
             </div>
 
             <div class="snx-form-group">
-              <label class="snx-form-label" for="new-prod-rating">Rating (0.1 to 5.0) *</label>
-              <input type="number" id="new-prod-rating" class="snx-form-input" placeholder="0.1" step="0.1" min="0.1" max="5.0" value="5.0" required>
+              <label class="snx-form-label" for="new-prod-rating">Rating (0.1 to 100+) *</label>
+              <input type="number" id="new-prod-rating" class="snx-form-input" placeholder="0.1" step="0.1" min="0.1" max="1000" value="5.0" required>
             </div>
           </div>
 

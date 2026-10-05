@@ -21,7 +21,7 @@ export function renderCatalogPage(container, queryParams = {}) {
 
   let activeSort = queryParams.sort || 'relevance';
   let minRating = 0;
-  let maxPrice = 100000;
+  let maxPrice = 10000000;
   let minPrice = 0;
   let activePricePreset = 'all';
 
@@ -188,7 +188,7 @@ export function renderCatalogPage(container, queryParams = {}) {
               <div class="snx-price-inputs-row">
                 <input type="number" id="snx-min-price-in" class="snx-price-input" placeholder="Min" step="0.1" value="${minPrice > 0 ? minPrice : ''}">
                 <span>-</span>
-                <input type="number" id="snx-max-price-in" class="snx-price-input" placeholder="Max" step="0.1" value="${maxPrice < 100000 ? maxPrice : ''}">
+                <input type="number" id="snx-max-price-in" class="snx-price-input" placeholder="Max" step="0.1" value="${maxPrice < 10000000 ? maxPrice : ''}">
                 <button type="button" class="snx-price-go-btn" id="snx-price-go-btn">Go</button>
               </div>
             </div>

@@ -36,6 +36,46 @@ The platform strictly uses ONLY the following 6 custom categories:
   - Image 3: `/products/product-001/image-3.jpg`
 - **Features**: Lightbox fullscreen viewer, zoom, Wishlist, Cart, and Checkout.
 
+### Product 02: **Malay**
+- **Category**: `পাগল`
+- **Rating**: `2 ★`
+- **Images**: `/products/malay/thumbnail.jpg`, `/products/malay/image-1.jpg`, `/products/malay/image-2.jpg`
+
+### Product 03: **Supe**
+- **Category**: `ভদ্র ছেলে`
+- **Rating**: `0.1 ★`
+- **Images**: `/products/supe/thumbnail.jpg`, `/products/supe/image-1.jpg`, `/products/supe/image-2.jpg`
+
+### Product 04: **Mosa**
+- **Category**: `বিশেষ জন্তু জানোয়ার`
+- **Rating**: `4.9 ★`
+
+### Product 05: **Dip**
+- **Category**: `FESTIVAL DHAMAKA`
+- **Rating**: `5 ★`
+- **Images**: `/products/dip/thumbnail.jpg`, `/products/dip/image-1.jpg`, `/products/dip/image-2.jpg`
+
+### Product 06: **kundan**
+- **Category**: `ভদ্র ছেলে`
+- **Price**: `₹150`
+- **Rating**: `4 ★`
+- **Description**: A famous and charismatic musician who plays rock-and-roll music.
+- **Images**: `/products/kundan/thumbnail.jpg`, `/products/kundan/image-1.jpg`
+
+### Product 07: **Adam**
+- **Category**: `WOH ALAG HI LEVEL KA BANDA THA`
+- **Price**: `₹1,50,000`
+- **Rating**: `100 ★`
+- **Description**: Prominent media figure, author, Australian comedian, and maths geek.
+- **Images**: `/products/adam/thumbnail.jpg`, `/products/adam/image-1.jpg`
+
+### Product 08: **Purnandu**
+- **Category**: `FESTIVAL DHAMAKA`
+- **Price**: `₹500`
+- **Rating**: `5 ★`
+- **Description**: Profoundly gifted with rapid comprehension and intense curiosity.
+- **Images**: `/products/purnandu/thumbnail.jpg`, `/products/purnandu/image-1.jpg`
+
 ---
 
 ## 🛠️ How to Add New Products

@@ -4,6 +4,7 @@
  */
 
 import { PRODUCTS } from '../data/products.js';
+import { fetchRemoteProducts, saveRemoteProduct, deleteRemoteProduct } from '../services/supabaseService.js';
 
 const STORAGE_KEYS = {
   CART: 'shopnex_custom_cart_v2',
@@ -46,6 +47,8 @@ class Store {
     this.recentlyViewed = this.loadFromStorage(STORAGE_KEYS.RECENTLY_VIEWED, ["product-001"]);
     this.user = this.loadFromStorage(STORAGE_KEYS.USER, DEFAULT_USER);
     this.sellerProducts = this.loadFromStorage(STORAGE_KEYS.SELLER_PRODUCTS, []);
+    this.remoteProducts = [];
+    this.initRemoteProducts();
 
     // Filter and catalog dynamic states
     this.catalogFilters = {
@@ -105,30 +108,122 @@ class Store {
     });
   }
 
-  // --- PRODUCT ACCESS ---
-  getAllProducts() {
-    // Map of id -> product where sellerProducts overrides base PRODUCTS
-    const productMap = new Map();
-    // 1. Put base products first
-    PRODUCTS.forEach(p => productMap.set(p.id, { ...p }));
-    // 2. Overlay any updates/new products from sellerProducts
-    this.sellerProducts.forEach(p => {
-      const existing = productMap.get(p.id) || {};
-      const merged = { ...existing, ...p };
-      // Prevent empty strings or empty arrays from wiping out defined base media
-      if (!p.image && existing.image) merged.image = existing.image;
-      if (!p.thumbnail && existing.thumbnail) merged.thumbnail = existing.thumbnail;
-      if ((!p.images || p.images.length === 0) && existing.images && existing.images.length > 0) {
-        merged.images = existing.images;
+  // --- PRODUCT ACCESS (SHARED MULTI-VISITOR DATABASE & LOCAL FALLBACK) ---
+  async initRemoteProducts() {
+    try {
+      const remote = await fetchRemoteProducts();
+      if (Array.isArray(remote) && remote.length > 0) {
+        this.remoteProducts = remote;
+        this.notify('products_updated', { products: this.getAllProducts() });
       }
-      productMap.set(p.id, merged);
+    } catch (err) {
+      console.warn('Could not load remote products from Supabase:', err);
+    }
+  }
+
+  getAllProducts() {
+    // Map of id -> product
+    const productMap = new Map();
+
+    // 1. Put base products first with musicUrl defaults
+    PRODUCTS.forEach(p => productMap.set(p.id, {
+      ...p,
+      musicUrl: p.musicUrl || p.audio || p.song || null,
+      audio: p.musicUrl || p.audio || p.song || null,
+      song: p.musicUrl || p.audio || p.song || null
+    }));
+
+    // 2. Overlay remote products from central Supabase database (SHARED across all visitors!)
+    if (Array.isArray(this.remoteProducts)) {
+      this.remoteProducts.forEach(p => {
+        const existing = productMap.get(p.id) || {};
+        const merged = { ...existing, ...p };
+        if (!p.image && existing.image) merged.image = existing.image;
+        if (!p.thumbnail && existing.thumbnail) merged.thumbnail = existing.thumbnail;
+        if ((!p.images || p.images.length === 0) && existing.images && existing.images.length > 0) {
+          merged.images = existing.images;
+        }
+        merged.musicUrl = p.musicUrl || p.audio || p.song || existing.musicUrl || null;
+        merged.audio = merged.musicUrl;
+        merged.song = merged.musicUrl;
+        productMap.set(p.id, merged);
+      });
+    }
+
+    // 3. Overlay any locally cached seller products if not overridden
+    this.sellerProducts.forEach(p => {
+      if (!this.remoteProducts.some(rp => rp.id === p.id)) {
+        const existing = productMap.get(p.id) || {};
+        const merged = { ...existing, ...p };
+        if (!p.image && existing.image) merged.image = existing.image;
+        if (!p.thumbnail && existing.thumbnail) merged.thumbnail = existing.thumbnail;
+        if ((!p.images || p.images.length === 0) && existing.images && existing.images.length > 0) {
+          merged.images = existing.images;
+        }
+        merged.musicUrl = p.musicUrl || p.audio || p.song || existing.musicUrl || null;
+        merged.audio = merged.musicUrl;
+        merged.song = merged.musicUrl;
+        productMap.set(p.id, merged);
+      }
     });
+
     return Array.from(productMap.values());
   }
 
   getProductById(id) {
     if (!id) return null;
     return this.getAllProducts().find(p => p.id === id);
+  }
+
+  /**
+   * Save product to central Supabase database and local store
+   */
+  async saveProduct(productData) {
+    let savedRemote = null;
+    try {
+      savedRemote = await saveRemoteProduct(productData);
+      if (savedRemote) {
+        const idx = this.remoteProducts.findIndex(p => p.id === savedRemote.id);
+        if (idx !== -1) {
+          this.remoteProducts[idx] = savedRemote;
+        } else {
+          this.remoteProducts.push(savedRemote);
+        }
+      }
+    } catch (err) {
+      console.warn('Central database save fallback:', err.message);
+    }
+
+    // Also update local store
+    const existing = this.findProductByName(productData.name) || this.getProductById(productData.id);
+    let finalProduct;
+    if (existing) {
+      finalProduct = this.updateProduct(existing.id, productData);
+    } else {
+      finalProduct = this.addSellerProduct(productData);
+    }
+
+    if (savedRemote) {
+      finalProduct = { ...finalProduct, ...savedRemote };
+    }
+
+    this.notify('products_updated', { product: finalProduct, products: this.getAllProducts() });
+    return finalProduct;
+  }
+
+  /**
+   * Delete product from central database and local store
+   */
+  async deleteProduct(productId) {
+    try {
+      await deleteRemoteProduct(productId);
+      this.remoteProducts = this.remoteProducts.filter(p => p.id !== productId);
+    } catch (err) {
+      console.warn('Central database delete fallback:', err.message);
+    }
+
+    this.deleteSellerProduct(productId);
+    this.notify('products_updated', { deletedId: productId, products: this.getAllProducts() });
   }
 
   // --- CART OPERATIONS ---

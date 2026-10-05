@@ -1,10 +1,9 @@
 /**
  * Product Details Page (PDP) View
- * Optimized for Custom Product Media, Audio, Video, and Zero Fake Data
+ * Optimized for Custom Product Media, Shared Central Music System, and Clean Lifecycle.
  */
 
 import { store } from '../state/store.js';
-import { mediaStorage } from '../state/mediaStorage.js';
 import { formatPriceINR } from '../components/productCard.js';
 import { showToast } from '../components/toast.js';
 
@@ -19,7 +18,7 @@ export function renderProductDetailPage(container, productId) {
         <a href="#/catalog" class="snx-btn snx-btn-primary">Browse Catalog</a>
       </div>
     `;
-    return;
+    return () => {};
   }
 
   // Record into recently viewed
@@ -33,28 +32,15 @@ export function renderProductDetailPage(container, productId) {
     : (product.thumbnail ? [product.thumbnail] : (product.image ? [product.image] : []));
 
   const hasVideo = !!product.video;
-  let hasAudio = !!(product.audio || product.song);
+  // Shared central music URL
+  const musicUrl = product.musicUrl || product.audio || product.song || null;
+  const hasMusic = !!musicUrl;
   const hasHighlights = Array.isArray(product.highlights) && product.highlights.length > 0;
   const hasSpecs = product.specifications && Object.keys(product.specifications).length > 0;
-  const fallbackKey = `audio_${product.id}`;
-  let audioResolvedSrc = product.audio || product.song || '';
 
-  // Proactively check IndexedDB in case audio was stored under product key
-  mediaStorage.resolveAudioUrl(product.audio || product.song || fallbackKey, fallbackKey).then(url => {
-    if (url) {
-      audioResolvedSrc = url;
-      if (!hasAudio) {
-        hasAudio = true;
-        render();
-      } else {
-        const audioEl = container.querySelector('#snx-pdp-audio-element');
-        if (audioEl && audioEl.src !== url) {
-          audioEl.src = url;
-          attemptAutoplay();
-        }
-      }
-    }
-  });
+  // Active audio state
+  let audio = null;
+  let isAutoplayBlocked = false;
 
   function render() {
     const isWishlisted = store.isInWishlist(product.id);
@@ -128,14 +114,21 @@ export function renderProductDetailPage(container, productId) {
               </button>
             </div>
 
-            <!-- Rating Row (Exact provided rating) -->
-            <div class="snx-pdp-rating-row">
+            <!-- Rating & Music Badges Row -->
+            <div class="snx-pdp-rating-row" style="flex-wrap: wrap; gap: 8px;">
               <span class="snx-pdp-rating-badge">★ ${product.rating !== undefined ? product.rating : '5.0'}</span>
               ${product.reviewCount ? `<span class="snx-pdp-reviews-count">${product.reviewCount} Ratings</span>` : `<span class="snx-pdp-reviews-count">Verified Product Rating</span>`}
               <span class="snx-pdp-verified-badge">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Original Item
               </span>
+
+              ${hasMusic ? `
+                <span class="snx-pdp-music-badge" title="This product has an assigned theme song that automatically plays">
+                  <span class="snx-music-dot"></span>
+                  ♫ Theme Music Assigned
+                </span>
+              ` : ''}
             </div>
 
             <!-- Price Card (if provided) -->
@@ -174,19 +167,12 @@ export function renderProductDetailPage(container, productId) {
               </div>
             </div>
 
-            <!-- Media Quick Anchors if Video or Song exists -->
-            ${(hasVideo || hasAudio) ? `
+            <!-- Optional Video Anchor -->
+            ${hasVideo ? `
               <div style="display: flex; gap: 12px; margin-top: 10px;">
-                ${hasVideo ? `
-                  <a href="#pdp-video-section" class="snx-btn snx-btn-secondary snx-btn-sm" style="display: flex; align-items: center; gap: 6px;">
-                    ▶ Watch Video
-                  </a>
-                ` : ''}
-                ${hasAudio ? `
-                  <a href="#pdp-audio-section" class="snx-btn snx-btn-secondary snx-btn-sm" style="display: flex; align-items: center; gap: 6px;">
-                    ♫ Listen to Song
-                  </a>
-                ` : ''}
+                <a href="#pdp-video-section" class="snx-btn snx-btn-secondary snx-btn-sm" style="display: flex; align-items: center; gap: 6px;">
+                  ▶ Watch Video
+                </a>
               </div>
             ` : ''}
           </div>
@@ -203,100 +189,6 @@ export function renderProductDetailPage(container, productId) {
               <source src="${product.video}" type="video/mp4">
               Your browser does not support the video tag.
             </video>
-          </section>
-        ` : ''}
-
-        <!-- OPTIONAL AUDIO / SONG PLAYER (Only if audio provided) -->
-        ${hasAudio ? `
-          <section class="snx-pdp-media-card" id="pdp-audio-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 class="snx-media-card-title" style="margin-bottom: 0;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                Product Song / Audio Track
-              </h3>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="snx-audio-playing-badge" id="snx-audio-playing-badge" style="display: none;">
-                  <span style="font-size: 0.625rem;">●</span> AUTO-PLAYING
-                </span>
-                <span style="font-size: 0.75rem; color: var(--snx-text-muted);">Auto-plays on view</span>
-              </div>
-            </div>
-
-            <!-- Autoplay fallback prompt if browser policy waits for initial tap/click -->
-            <div id="snx-autoplay-prompt" class="snx-autoplay-prompt" style="display: none;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span>♫</span>
-                <span>Click anywhere to start audio playback for ${product.name}</span>
-              </div>
-              <span style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Play Now ▶</span>
-            </div>
-
-            <div class="snx-audio-player-box">
-              <div class="snx-audio-info-row">
-                <div class="snx-audio-title-group">
-                  <div class="snx-audio-icon">♫</div>
-                  <div>
-                    <div style="font-weight: 700; font-size: 1rem;">${product.name}</div>
-                    <div style="font-size: 0.8125rem; color: #a5b4fc;">Featured Audio Track (MP3, WAV, M4A, OGG)</div>
-                  </div>
-                </div>
-                <div class="snx-audio-time" id="snx-audio-time-display">
-                  <span id="snx-audio-current-time">0:00</span> / <span id="snx-audio-duration-display">--:--</span>
-                </div>
-              </div>
-
-              <!-- Interactive Progress / Seek Bar with Time Markers -->
-              <div class="snx-progress-container">
-                <span class="snx-progress-time-label" id="snx-progress-cur-time">0:00</span>
-                <div class="snx-progress-bar-wrapper">
-                  <input type="range" class="snx-audio-progress-bar" id="snx-audio-seek" value="0" min="0" max="100" step="0.1" aria-label="Seek audio progress">
-                  <div class="snx-progress-fill" id="snx-progress-fill" style="width: 0%;"></div>
-                </div>
-                <span class="snx-progress-time-label" id="snx-progress-dur-time">--:--</span>
-              </div>
-
-              <!-- Controls Row: Rewind, Play/Pause, Forward, Volume -->
-              <div class="snx-audio-controls-row">
-                <!-- Transport Buttons with Rewind and Forward -->
-                <div class="snx-audio-transport-buttons">
-                  <!-- Rewind 10s Button -->
-                  <button type="button" class="snx-audio-skip-btn" id="snx-audio-rewind-btn" aria-label="Rewind 10 seconds" title="Rewind 10 seconds (← Left Arrow)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="11 19 2 12 11 5 11 19"></polygon>
-                      <polygon points="22 19 13 12 22 5 22 19"></polygon>
-                    </svg>
-                    <span>-10s</span>
-                  </button>
-
-                  <!-- Play / Pause Button -->
-                  <button type="button" class="snx-audio-play-btn" id="snx-audio-toggle-btn" aria-label="Play or Pause Audio" title="Play / Pause (Spacebar)">
-                    ▶
-                  </button>
-
-                  <!-- Forward 10s Button -->
-                  <button type="button" class="snx-audio-skip-btn" id="snx-audio-forward-btn" aria-label="Forward 10 seconds" title="Forward 10 seconds (→ Right Arrow)">
-                    <span>+10s</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="13 19 22 12 13 5 13 19"></polygon>
-                      <polygon points="2 19 11 12 2 5 2 19"></polygon>
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Rewind / Forward Feedback indicator -->
-                <div id="snx-audio-skip-feedback" class="snx-audio-skip-feedback"></div>
-                
-                <!-- Volume Control -->
-                <div class="snx-audio-volume-wrap">
-                  <button type="button" class="snx-audio-vol-btn" id="snx-audio-mute-btn" aria-label="Toggle mute" title="Mute/Unmute">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                  </button>
-                  <input type="range" class="snx-audio-volume-slider" id="snx-audio-volume" min="0" max="1" step="0.05" value="1" aria-label="Audio Volume" title="Volume">
-                </div>
-
-                <audio id="snx-pdp-audio-element" preload="auto" src="${product.audio || product.song}"></audio>
-              </div>
-            </div>
           </section>
         ` : ''}
 
@@ -346,10 +238,10 @@ export function renderProductDetailPage(container, productId) {
       </div>
     `;
 
-    attachEvents();
+    attachStandardEvents();
   }
 
-  function attachEvents() {
+  function attachStandardEvents() {
     // Thumbnails click
     const thumbBtns = container.querySelectorAll('[data-thumb-idx]');
     thumbBtns.forEach(btn => {
@@ -409,239 +301,15 @@ export function renderProductDetailPage(container, productId) {
       decBtn.addEventListener('click', () => {
         if (quantity > 1) {
           quantity--;
-          container.querySelector('#snx-qty-val').textContent = quantity;
+          const valEl = container.querySelector('#snx-qty-val');
+          if (valEl) valEl.textContent = quantity;
         }
       });
       incBtn.addEventListener('click', () => {
         quantity++;
-        container.querySelector('#snx-qty-val').textContent = quantity;
+        const valEl = container.querySelector('#snx-qty-val');
+        if (valEl) valEl.textContent = quantity;
       });
-    }
-
-    // Audio Player setup (Automatic playback on View, Rewind, Forward, Progress Bar)
-    const audioEl = container.querySelector('#snx-pdp-audio-element');
-    const playBtn = container.querySelector('#snx-audio-toggle-btn');
-    const rewindBtn = container.querySelector('#snx-audio-rewind-btn');
-    const forwardBtn = container.querySelector('#snx-audio-forward-btn');
-    const seekBar = container.querySelector('#snx-audio-seek');
-    const progressFill = container.querySelector('#snx-progress-fill');
-    const curTimeDisp = container.querySelector('#snx-audio-current-time');
-    const durTimeDisp = container.querySelector('#snx-audio-duration-display');
-    const curProgTime = container.querySelector('#snx-progress-cur-time');
-    const durProgTime = container.querySelector('#snx-progress-dur-time');
-    const volSlider = container.querySelector('#snx-audio-volume');
-    const muteBtn = container.querySelector('#snx-audio-mute-btn');
-    const playingBadge = container.querySelector('#snx-audio-playing-badge');
-    const autoplayPrompt = container.querySelector('#snx-autoplay-prompt');
-    const skipFeedback = container.querySelector('#snx-audio-skip-feedback');
-
-    if (audioEl) {
-      function updateProgressUI() {
-        if (audioEl.duration) {
-          const pct = Math.min(100, Math.max(0, (audioEl.currentTime / audioEl.duration) * 100));
-          if (seekBar) seekBar.value = pct;
-          if (progressFill) progressFill.style.width = pct + '%';
-
-          const curM = Math.floor(audioEl.currentTime / 60);
-          const curS = Math.floor(audioEl.currentTime % 60).toString().padStart(2, '0');
-          const timeFormatted = `${curM}:${curS}`;
-          if (curTimeDisp) curTimeDisp.textContent = timeFormatted;
-          if (curProgTime) curProgTime.textContent = timeFormatted;
-
-          const durM = Math.floor(audioEl.duration / 60);
-          const durS = Math.floor(audioEl.duration % 60).toString().padStart(2, '0');
-          const durFormatted = `${durM}:${durS}`;
-          if (durTimeDisp) durTimeDisp.textContent = durFormatted;
-          if (durProgTime) durProgTime.textContent = durFormatted;
-        }
-      }
-
-      function showSkipFeedback(text) {
-        if (!skipFeedback) return;
-        skipFeedback.textContent = text;
-        skipFeedback.classList.add('show');
-        setTimeout(() => {
-          skipFeedback.classList.remove('show');
-        }, 800);
-      }
-
-      function attemptAutoplay() {
-        if (!audioEl) return;
-        const playPromise = audioEl.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            if (playBtn) playBtn.textContent = '❚❚';
-            if (playingBadge) playingBadge.style.display = 'inline-flex';
-            if (autoplayPrompt) autoplayPrompt.style.display = 'none';
-          }).catch(err => {
-            console.log('Autoplay waiting for initial gesture:', err);
-            if (autoplayPrompt) autoplayPrompt.style.display = 'flex';
-
-            const onFirstGesture = () => {
-              audioEl.play().then(() => {
-                if (playBtn) playBtn.textContent = '❚❚';
-                if (playingBadge) playingBadge.style.display = 'inline-flex';
-                if (autoplayPrompt) autoplayPrompt.style.display = 'none';
-              }).catch(() => {});
-              document.removeEventListener('click', onFirstGesture);
-              document.removeEventListener('keydown', onFirstGesture);
-            };
-
-            document.addEventListener('click', onFirstGesture, { once: true });
-            document.addEventListener('keydown', onFirstGesture, { once: true });
-          });
-        }
-      }
-
-      if (autoplayPrompt) {
-        autoplayPrompt.addEventListener('click', () => {
-          audioEl.play().then(() => {
-            if (playBtn) playBtn.textContent = '❚❚';
-            if (playingBadge) playingBadge.style.display = 'inline-flex';
-            autoplayPrompt.style.display = 'none';
-          });
-        });
-      }
-
-      // Resolve audio URL if stored in IndexedDB or blob and trigger autoplay
-      const rawAudio = product.audio || product.song;
-      if (rawAudio) {
-        mediaStorage.resolveAudioUrl(rawAudio).then(resolved => {
-          if (resolved) {
-            if (audioEl.src !== resolved) {
-              audioEl.src = resolved;
-            }
-            attemptAutoplay();
-          }
-        });
-      }
-
-      // Play / Pause Toggle
-      if (playBtn) {
-        playBtn.addEventListener('click', () => {
-          if (audioEl.paused) {
-            audioEl.play().then(() => {
-              playBtn.textContent = '❚❚';
-              if (playingBadge) playingBadge.style.display = 'inline-flex';
-              if (autoplayPrompt) autoplayPrompt.style.display = 'none';
-            }).catch(err => {
-              showToast('Click to allow audio playback', 'info');
-            });
-          } else {
-            audioEl.pause();
-            playBtn.textContent = '▶';
-            if (playingBadge) playingBadge.style.display = 'none';
-          }
-        });
-      }
-
-      // Rewind 10 seconds button
-      if (rewindBtn) {
-        rewindBtn.addEventListener('click', () => {
-          audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
-          showSkipFeedback('⏪ -10s');
-          updateProgressUI();
-        });
-      }
-
-      // Forward 10 seconds button
-      if (forwardBtn) {
-        forwardBtn.addEventListener('click', () => {
-          const maxDur = audioEl.duration || 999999;
-          audioEl.currentTime = Math.min(maxDur, audioEl.currentTime + 10);
-          showSkipFeedback('+10s ⏩');
-          updateProgressUI();
-        });
-      }
-
-      audioEl.addEventListener('loadedmetadata', () => {
-        updateProgressUI();
-      });
-
-      audioEl.addEventListener('timeupdate', () => {
-        updateProgressUI();
-      });
-
-      audioEl.addEventListener('play', () => {
-        if (playBtn) playBtn.textContent = '❚❚';
-        if (playingBadge) playingBadge.style.display = 'inline-flex';
-        if (autoplayPrompt) autoplayPrompt.style.display = 'none';
-      });
-
-      audioEl.addEventListener('pause', () => {
-        if (playBtn) playBtn.textContent = '▶';
-        if (playingBadge) playingBadge.style.display = 'none';
-      });
-
-      // Progress bar input / scrub
-      if (seekBar) {
-        seekBar.addEventListener('input', () => {
-          if (audioEl.duration) {
-            audioEl.currentTime = (seekBar.value / 100) * audioEl.duration;
-            updateProgressUI();
-          }
-        });
-      }
-
-      audioEl.addEventListener('ended', () => {
-        if (playBtn) playBtn.textContent = '▶';
-        if (playingBadge) playingBadge.style.display = 'none';
-        if (seekBar) seekBar.value = 0;
-        if (progressFill) progressFill.style.width = '0%';
-      });
-
-      // Volume slider
-      if (volSlider) {
-        volSlider.addEventListener('input', () => {
-          audioEl.volume = parseFloat(volSlider.value);
-          audioEl.muted = audioEl.volume === 0;
-          updateMuteIcon();
-        });
-      }
-
-      // Mute / Unmute button
-      let prevVolume = 1;
-      function updateMuteIcon() {
-        if (!muteBtn) return;
-        if (audioEl.muted || audioEl.volume === 0) {
-          muteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
-          muteBtn.title = "Unmute";
-        } else {
-          muteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
-          muteBtn.title = "Mute";
-        }
-      }
-
-      if (muteBtn) {
-        muteBtn.addEventListener('click', () => {
-          if (audioEl.muted || audioEl.volume === 0) {
-            audioEl.muted = false;
-            audioEl.volume = prevVolume || 1;
-            if (volSlider) volSlider.value = audioEl.volume;
-          } else {
-            prevVolume = audioEl.volume;
-            audioEl.muted = true;
-            if (volSlider) volSlider.value = 0;
-          }
-          updateMuteIcon();
-        });
-      }
-
-      // Keyboard navigation (ArrowLeft = rewind, ArrowRight = forward, Space = play/pause)
-      const onKeyDown = (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        if (e.code === 'Space') {
-          e.preventDefault();
-          if (playBtn) playBtn.click();
-        } else if (e.code === 'ArrowLeft') {
-          e.preventDefault();
-          if (rewindBtn) rewindBtn.click();
-        } else if (e.code === 'ArrowRight') {
-          e.preventDefault();
-          if (forwardBtn) forwardBtn.click();
-        }
-      };
-      window.addEventListener('keydown', onKeyDown);
     }
   }
 
@@ -664,5 +332,163 @@ export function renderProductDetailPage(container, productId) {
     });
   }
 
+  // ==========================================================================
+  // SHARED CENTRAL MUSIC SYSTEM & UNOBTRUSIVE FLOATING CONTROL
+  // ==========================================================================
+  let firstTouchHandler = null;
+
+  function initProductMusicSystem() {
+    if (!hasMusic) return;
+
+    // 1. Mount small, unobtrusive floating music pill
+    let widget = document.getElementById('snx-pdp-music-widget');
+    if (!widget) {
+      widget = document.createElement('div');
+      widget.id = 'snx-pdp-music-widget';
+      widget.className = 'snx-pdp-music-widget';
+      widget.innerHTML = `
+        <div class="snx-music-visualizer" id="snx-music-visualizer">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="snx-music-meta">
+          <span class="snx-music-label">Product Music</span>
+          <span class="snx-music-status" id="snx-music-status-text">Loading ♫</span>
+        </div>
+        <button type="button" class="snx-music-btn" id="snx-music-btn-play" title="Play / Pause" aria-label="Toggle music playback">
+          ▶
+        </button>
+        <button type="button" class="snx-music-btn" id="snx-music-btn-mute" title="Mute / Unmute" aria-label="Toggle mute">
+          🔊
+        </button>
+      `;
+      document.body.appendChild(widget);
+    }
+
+    const visualizer = widget.querySelector('#snx-music-visualizer');
+    const statusText = widget.querySelector('#snx-music-status-text');
+    const playBtn = widget.querySelector('#snx-music-btn-play');
+    const muteBtn = widget.querySelector('#snx-music-btn-mute');
+
+    function updateWidgetUI(isPlaying, isMuted) {
+      if (visualizer) {
+        if (isPlaying) {
+          visualizer.classList.add('playing');
+        } else {
+          visualizer.classList.remove('playing');
+        }
+      }
+
+      if (playBtn) {
+        playBtn.textContent = isPlaying ? '❚❚' : '▶';
+        playBtn.title = isPlaying ? 'Pause Music' : 'Play Music';
+      }
+
+      if (statusText) {
+        if (isAutoplayBlocked && !isPlaying) {
+          statusText.textContent = 'Tap to Play ♫';
+        } else {
+          statusText.textContent = isPlaying ? 'Playing ♫' : 'Paused';
+        }
+      }
+
+      if (muteBtn) {
+        muteBtn.textContent = isMuted ? '🔇' : '🔊';
+        muteBtn.title = isMuted ? 'Unmute' : 'Mute';
+      }
+    }
+
+    // 2. Initialize native audio instance with looping
+    audio = new Audio();
+    audio.src = musicUrl;
+    audio.loop = true; // Loop song while visitor remains on page
+    audio.volume = 0.8;
+
+    // 3. Attempt automatic playback respecting browser policy
+    function attemptAutoplay() {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          isAutoplayBlocked = false;
+          updateWidgetUI(true, audio.muted);
+        }).catch(err => {
+          // Autoplay blocked by browser policy without user gesture
+          isAutoplayBlocked = true;
+          updateWidgetUI(false, audio.muted);
+
+          // One-time gesture listener on document to smoothly start audio on first click/touch
+          firstTouchHandler = () => {
+            if (audio && audio.paused) {
+              audio.play().then(() => {
+                isAutoplayBlocked = false;
+                updateWidgetUI(true, audio.muted);
+              }).catch(() => {});
+            }
+          };
+
+          window.addEventListener('click', firstTouchHandler, { once: true });
+          window.addEventListener('touchstart', firstTouchHandler, { once: true });
+        });
+      }
+    }
+
+    attemptAutoplay();
+
+    // 4. Attach widget button listeners
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!audio) return;
+      if (audio.paused) {
+        audio.play().then(() => {
+          isAutoplayBlocked = false;
+          updateWidgetUI(true, audio.muted);
+        }).catch(() => {});
+      } else {
+        audio.pause();
+        updateWidgetUI(false, audio.muted);
+      }
+    });
+
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!audio) return;
+      audio.muted = !audio.muted;
+      updateWidgetUI(!audio.paused, audio.muted);
+    });
+
+    audio.addEventListener('play', () => updateWidgetUI(true, audio.muted));
+    audio.addEventListener('pause', () => updateWidgetUI(false, audio.muted));
+  }
+
+  // Initial render
   render();
+
+  // Initialize central music
+  initProductMusicSystem();
+
+  // ==========================================================================
+  // ROUTER CLEANUP LIFECYCLE (REQUIREMENTS 8 & 9)
+  // Stops current product music immediately when customer leaves this product page
+  // ==========================================================================
+  return () => {
+    // 1. Immediately pause and unmount audio instance
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.src = '';
+      audio = null;
+    }
+
+    // 2. Remove floating music pill widget
+    const widget = document.getElementById('snx-pdp-music-widget');
+    if (widget) {
+      widget.remove();
+    }
+
+    // 3. Remove one-time gesture listener if pending
+    if (firstTouchHandler) {
+      window.removeEventListener('click', firstTouchHandler);
+      window.removeEventListener('touchstart', firstTouchHandler);
+      firstTouchHandler = null;
+    }
+  };
 }

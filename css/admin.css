@@ -1,0 +1,458 @@
+/* ==========================================================================
+   SHOPNEX Admin Product Editor & Shared Music Control Styles
+   ========================================================================== */
+
+.snx-admin-page {
+  padding-top: 24px;
+  padding-bottom: 60px;
+}
+
+.snx-admin-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.snx-admin-title {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: var(--snx-text-main);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.snx-admin-subtitle {
+  font-size: 0.875rem;
+  color: var(--snx-text-muted);
+  margin-top: 4px;
+}
+
+.snx-admin-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Admin Auth / Login Card
+   ========================================================================== */
+.snx-admin-auth-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-lg);
+  padding: 36px 32px;
+  box-shadow: var(--snx-shadow-md);
+}
+
+.snx-admin-auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.snx-admin-lock-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin: 0 auto 16px;
+}
+
+.snx-admin-auth-header h2 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--snx-text-main);
+  margin-bottom: 6px;
+}
+
+.snx-admin-auth-header p {
+  font-size: 0.875rem;
+  color: var(--snx-text-muted);
+}
+
+.snx-admin-auth-footer {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--snx-border);
+}
+
+/* ==========================================================================
+   Admin Table Music Badges
+   ========================================================================== */
+.snx-admin-music-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.8125rem;
+  max-width: 220px;
+}
+
+.snx-admin-music-badge.assigned {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #5b21b6;
+}
+
+.snx-admin-music-badge.none {
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px dashed #cbd5e1;
+}
+
+.snx-admin-music-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.snx-music-name-text {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.snx-music-tag {
+  font-size: 0.6875rem;
+  color: #7c3aed;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.snx-mini-play-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #7c3aed;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform var(--snx-transition-fast);
+}
+
+.snx-mini-play-btn:hover {
+  transform: scale(1.1);
+  background: #6d28d9;
+}
+
+/* ==========================================================================
+   Product Music Section in Admin Editor Modal
+   ========================================================================== */
+.snx-editor-music-box {
+  background: linear-gradient(135deg, #f8fafc 0%, #f5f3ff 100%);
+  border: 1px solid #c4b5fd;
+  border-radius: var(--snx-radius-md);
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+
+.snx-music-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.snx-music-box-badge {
+  background: #7c3aed;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.snx-music-current-card {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-sm);
+  padding: 12px 16px;
+}
+
+.snx-music-status-active {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.snx-music-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.snx-music-details-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.snx-music-title-line {
+  font-size: 0.875rem;
+  color: var(--snx-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snx-music-url-line {
+  font-size: 0.6875rem;
+  color: var(--snx-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.snx-music-actions-right {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.snx-music-status-empty {
+  font-size: 0.8125rem;
+  color: var(--snx-text-muted);
+  text-align: center;
+  padding: 6px 0;
+}
+
+/* Upload Progress Bar */
+.snx-upload-progress-wrap {
+  background: #ffffff;
+  border: 1px solid var(--snx-border);
+  border-radius: var(--snx-radius-sm);
+  padding: 12px 14px;
+}
+
+.snx-progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.snx-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ==========================================================================
+   Alert Banners (Info, Success, Error)
+   ========================================================================== */
+.snx-alert-box {
+  padding: 12px 16px;
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.snx-alert-box.info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.snx-alert-box.success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.snx-alert-box.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* ==========================================================================
+   COMPACT CUSTOMER PRODUCT MUSIC WIDGET (UNOBTRUSIVE FLOATING CONTROL)
+   ========================================================================== */
+.snx-pdp-music-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 990;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  animation: snxSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.snx-pdp-music-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -5px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes snxSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sound Equalizer Visualizer */
+.snx-music-visualizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+  width: 14px;
+}
+
+.snx-music-visualizer span {
+  display: block;
+  width: 3px;
+  background: #a855f7;
+  border-radius: 2px;
+  height: 4px;
+  transition: height 0.2s ease;
+}
+
+.snx-music-visualizer.playing span:nth-child(1) {
+  animation: snxBarJump 0.8s infinite ease-in-out alternate;
+}
+
+.snx-music-visualizer.playing span:nth-child(2) {
+  animation: snxBarJump 1.1s infinite 0.2s ease-in-out alternate;
+}
+
+.snx-music-visualizer.playing span:nth-child(3) {
+  animation: snxBarJump 0.9s infinite 0.4s ease-in-out alternate;
+}
+
+@keyframes snxBarJump {
+  0% { height: 4px; }
+  100% { height: 16px; }
+}
+
+.snx-music-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.snx-music-label {
+  font-size: 0.625rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  letter-spacing: 0.06em;
+}
+
+.snx-music-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.snx-music-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.snx-music-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.08);
+}
+
+.snx-pdp-music-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #6d28d9;
+  padding: 4px 10px;
+  border-radius: var(--snx-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.snx-music-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7c3aed;
+  animation: snxPulse 1.5s infinite;
+}
+
+@keyframes snxPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .snx-admin-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .snx-admin-header-actions {
+    justify-content: stretch;
+  }
+
+  .snx-admin-header-actions .snx-btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  .snx-pdp-music-widget {
+    bottom: 74px; /* Dock right above mobile bottom nav */
+    right: 16px;
+    padding: 6px 12px;
+  }
+}

@@ -32,9 +32,14 @@ export function renderSellerPage(container) {
             <h1 class="snx-seller-title">Product & Content Manager</h1>
             <p class="snx-seller-subtitle">Upload media files, connect songs/audios, and manage showcase products.</p>
           </div>
-          <button type="button" class="snx-btn snx-btn-primary snx-btn-lg" id="snx-open-add-prod-btn">
-            + Add New Custom Product
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <a href="#/admin/products" class="snx-btn snx-btn-secondary snx-btn-lg" style="color: #6366f1; border-color: #c7d2fe;">
+              🔒 Real Admin Editor
+            </a>
+            <button type="button" class="snx-btn snx-btn-primary snx-btn-lg" id="snx-open-add-prod-btn">
+              + Add New Custom Product
+            </button>
+          </div>
         </div>
 
         <!-- 3 Metric Cards -->

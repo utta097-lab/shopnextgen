@@ -25,7 +25,7 @@ export function renderProductCardHTML(product) {
     (product.images && product.images.length > 0 ? product.images[0] : '');
 
   const hasVideo = !!product.video;
-  const hasAudio = !!(product.audio || product.song);
+  const hasAudio = !!(product.musicUrl || product.audio || product.song);
 
   const priceFormatted = formatPriceINR(product.price);
   const origPriceFormatted = formatPriceINR(product.originalPrice);

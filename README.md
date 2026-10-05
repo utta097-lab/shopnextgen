@@ -78,61 +78,53 @@ The platform strictly uses ONLY the following 6 custom categories:
 
 ---
 
-## 🛠️ How to Add New Products
+## 🔒 Real Admin Product Editor & Shared Central Music System
 
-You can add new products in two convenient ways:
+SHOPNEX includes a protected **Admin Product Editor** and **Central Shared Music System** powered by Supabase.
 
-### Method 1: Via the Showcase Manager (UI)
-1. Go to **[http://localhost:3000/#/seller](http://localhost:3000/#/seller)**.
-2. Click **+ Add New Custom Product**.
-3. Fill in:
-   - **Product Name**
-   - **Category** (select from the 6 custom categories)
-   - **Price** & **Original MRP**
-   - **Rating** (from `0.1` to `5.0`)
-   - **Image Path or URL** (e.g. `products/product-002/image-1.jpg`)
-   - Optional **Video Path / URL** (e.g. `products/product-002/video.mp4`)
-   - Optional **Song / Audio Path / URL** (e.g. `products/product-002/song.mp3`)
-   - **Description**
-   - **Feature on Hero Showcase** (checkbox)
-4. Click **Add to Showcase** — it is immediately live across the entire website!
-
-### Method 2: In Code (`js/data/products.js`)
-Add a new object to the `PRODUCTS` array in [`js/data/products.js`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/js/data/products.js):
-
-```javascript
-{
-  id: "product-002",
-  name: "Your Product Name",
-  category: "পাগল", // Choose from the 6 custom categories
-  price: 999,
-  originalPrice: 1499,
-  discount: 33,
-  images: [
-    "products/product-002/image-1.jpg",
-    "products/product-002/image-2.jpg"
-  ],
-  thumbnail: "products/product-002/thumbnail.jpg",
-  video: "products/product-002/video.mp4", // optional
-  audio: "products/product-002/song.mp3",  // optional
-  shortDescription: "Short tagline",
-  description: "Full description...",
-  rating: 4.8,
-  reviewCount: null, // No fake reviews
-  highlights: ["Feature 1", "Feature 2"],
-  specifications: { "Spec": "Value" },
-  availability: true,
-  featured: true,
-  badge: "NEW"
-}
-```
+### 🌟 Key Architecture
+- **Route**: `/#/admin` or `/#/admin/products`
+- **Shared Online Audio Storage**: Uploaded product music files are stored in Supabase Storage (`product-music` bucket) and shared across all visitors via public CDN URLs (`product.musicUrl`).
+- **No Local-Only State**: Music is **not** stored in client-only localStorage or IndexedDB. When an admin assigns a song to a product, **every visitor** who views that product gets the same music.
+- **Unobtrusive Floating Music Control**: On the Product Details Page, an unobtrusive floating glassmorphic pill allows visitors to toggle Play/Pause and Mute/Unmute.
+- **Clean Audio Lifecycle & Loop**: Songs loop continuously while on the product page and immediately stop when navigating away or switching to another product.
 
 ---
 
-## 🚀 Running the Project
+### 🚀 How to Set Up Supabase (1-Time Setup)
 
-The server is currently running:
+1. Create a free account at [Supabase](https://supabase.com) and create a new project.
+2. Open your project's **SQL Editor** (`/sql`).
+3. Paste and run the entire contents of [`supabase_schema.sql`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/supabase_schema.sql).
+   - This creates the `products` table with Row Level Security (RLS).
+   - Creates the `product-music` Storage bucket with public read access.
+   - Configures storage policies so only authenticated admins can upload/delete audio.
+   - Automatically seeds the initial base products into the database.
+4. Go to **Project Settings → API** in Supabase and copy:
+   - **Project URL** (e.g. `https://your-project.supabase.co`)
+   - **anon (public) key**
+5. Enter them in the Admin Settings tab at `/#/admin/settings` or in [`js/config/supabaseConfig.js`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/js/config/supabaseConfig.js).
+6. Create your admin user under **Authentication → Users** in Supabase, and you can now log in securely at `/#/admin/login`!
+
+---
+
+### 🎵 Admin Music Upload Workflow
+1. Go to `/#/admin/products` and sign in.
+2. Click **✏️ Edit** or **🎵 Music** on any product (e.g. "kundan" or "Adam").
+3. Click **[ 🎵 Upload Product Music ]**.
+4. Select your audio file (`.mp3`, `.wav`, `.ogg`, or `.m4a`).
+5. Watch the real-time progress bar upload the file to shared online storage.
+6. Click **💾 Save Product Changes**.
+7. The product now permanently possesses that shared song URL. Any visitor worldwide who visits that product page will automatically hear it!
+
+---
+
+## 🚀 Running the Project Locally
+
+Run a simple local static server:
 ```bash
 python -m http.server 3000
 ```
-Visit: **[http://localhost:3000/](http://localhost:3000/)**
+Open: **[http://localhost:3000/](http://localhost:3000/)**
+Admin: **[http://localhost:3000/#/admin/products](http://localhost:3000/#/admin/products)**
+

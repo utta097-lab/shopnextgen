@@ -49,7 +49,7 @@ export function openQuickViewModal(productId) {
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snx-card-brand">${product.category}</span>
-              ${product.audio || product.song ? `<span class="snx-card-badge snx-badge-song" style="font-size: 0.6875rem;">♫ SONG AVAILABLE</span>` : ''}
+              ${product.musicUrl || product.audio || product.song ? `<span class="snx-card-badge snx-badge-song" style="font-size: 0.6875rem;">♫ SONG AVAILABLE</span>` : ''}
               ${product.video ? `<span class="snx-card-badge snx-badge-video" style="font-size: 0.6875rem;">▶ VIDEO</span>` : ''}
             </div>
             <h3 id="qv-title" style="font-size: 1.35rem; margin-bottom: 8px;">${product.name}</h3>

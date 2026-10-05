@@ -11,6 +11,7 @@ import { renderCheckoutPage } from './pages/checkoutPage.js';
 import { renderAccountPage } from './pages/accountPage.js';
 import { renderWishlistPage } from './pages/wishlistPage.js';
 import { renderSellerPage } from './pages/sellerPage.js';
+import { renderAdminProductsPage } from './pages/adminProductsPage.js';
 
 export class Router {
   constructor(appContainer) {
@@ -91,6 +92,21 @@ export class Router {
 
     if (path === '/seller') {
       this.currentCleanup = renderSellerPage(this.container);
+      return;
+    }
+
+    if (path === '/admin' || path === '/admin/products') {
+      this.currentCleanup = renderAdminProductsPage(this.container, params);
+      return;
+    }
+
+    if (path === '/admin/login') {
+      this.currentCleanup = renderAdminProductsPage(this.container, { ...params, tab: 'login' });
+      return;
+    }
+
+    if (path === '/admin/settings') {
+      this.currentCleanup = renderAdminProductsPage(this.container, { ...params, tab: 'settings' });
       return;
     }
 

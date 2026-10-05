@@ -90,8 +90,8 @@ export class Router {
       return;
     }
 
-    if (path === '/seller') {
-      this.currentCleanup = renderSellerPage(this.container);
+    if (path === '/seller' || path === '/seller-hub') {
+      this.currentCleanup = renderAdminProductsPage(this.container, params);
       return;
     }
 

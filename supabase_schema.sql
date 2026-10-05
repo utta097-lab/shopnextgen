@@ -93,11 +93,10 @@ GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
 REVOKE EXECUTE ON FUNCTION public.check_is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.check_is_admin() TO authenticated, anon;
 
--- Auto-register any existing user in auth.users as admin:
-INSERT INTO public.shopnex_admins (user_id, email, role)
-SELECT id, email, 'admin'
-FROM auth.users
-ON CONFLICT (user_id) DO NOTHING;
+-- Register your specific admin user UUID (obtained from Authentication > Users):
+-- INSERT INTO public.shopnex_admins (user_id, role)
+-- VALUES ('1cf5b4d5-c5ea-4572-b6e0-aa89dc081a90', 'admin')
+-- ON CONFLICT (user_id) DO NOTHING;
 
 -- 4. Enable Row Level Security (RLS) on Products Table
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;

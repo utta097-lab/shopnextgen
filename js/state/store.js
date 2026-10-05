@@ -151,9 +151,9 @@ class Store {
       });
     }
 
-    // 3. Overlay any locally cached seller products if not overridden
-    this.sellerProducts.forEach(p => {
-      if (!this.remoteProducts.some(rp => rp.id === p.id)) {
+    // 3. Fallback: If remote database is not yet initialized, overlay local products
+    if ((!this.remoteProducts || this.remoteProducts.length === 0) && Array.isArray(this.sellerProducts)) {
+      this.sellerProducts.forEach(p => {
         const existing = productMap.get(p.id) || {};
         const merged = { ...existing, ...p };
         if (!p.image && existing.image) merged.image = existing.image;
@@ -165,8 +165,8 @@ class Store {
         merged.audio = merged.musicUrl;
         merged.song = merged.musicUrl;
         productMap.set(p.id, merged);
-      }
-    });
+      });
+    }
 
     return Array.from(productMap.values());
   }
@@ -205,9 +205,9 @@ class Store {
     const existing = this.findProductByName(productData.name) || this.getProductById(productData.id);
     let finalProduct;
     if (existing) {
-      finalProduct = this.updateProduct(existing.id, productData);
+      finalProduct = this._internalUpdateProduct(existing.id, productData);
     } else {
-      finalProduct = this.addSellerProduct(productData);
+      finalProduct = this._internalAddProduct(productData);
     }
 
     if (savedRemote) {
@@ -233,7 +233,7 @@ class Store {
       }
     }
 
-    this.deleteSellerProduct(productId);
+    this._internalDeleteProduct(productId);
     this.notify('products_updated', { deletedId: productId, products: this.getAllProducts() });
   }
 
@@ -470,35 +470,41 @@ class Store {
   }
 
   /**
-   * Connect an audio track to an existing product/person without creating duplicates
+   * Block direct unauthenticated audio connection
    */
-  attachAudioToProduct({ personId, name, category, filename, audioSource }) {
-    let target = null;
-    if (personId) {
-      target = this.getProductById(personId);
-    }
-    if (!target) {
-      target = this.findProductByMatch({ name, category, filename });
-    }
-    if (!target) {
-      return null;
-    }
-
-    return this.updateProduct(target.id, {
-      audio: audioSource,
-      song: audioSource
-    });
+  attachAudioToProduct() {
+    throw new Error('Unauthorized: Music assignment is restricted to authorized SHOPNEX administrators via uploadProductMusic().');
   }
 
-  addSellerProduct(productData) {
-    // Check if product with this name already exists
+  /**
+   * Block direct unauthenticated product creation
+   */
+  addSellerProduct() {
+    throw new Error('Unauthorized: Product creation is restricted to authorized SHOPNEX administrators via saveProduct().');
+  }
+
+  /**
+   * Block direct unauthenticated product update
+   */
+  updateProduct() {
+    throw new Error('Unauthorized: Product modification is restricted to authorized SHOPNEX administrators via saveProduct().');
+  }
+
+  /**
+   * Block direct unauthenticated product deletion
+   */
+  deleteSellerProduct() {
+    throw new Error('Unauthorized: Product deletion is restricted to authorized SHOPNEX administrators via deleteProduct().');
+  }
+
+  // --- INTERNAL STORE MUTATION HELPERS (INVOKED EXCLUSIVELY VIA saveProduct() & deleteProduct()) ---
+  _internalAddProduct(productData) {
     const existing = this.findProductByName(productData.name);
     if (existing) {
-      // UPDATE existing product instead of creating duplicate
-      return this.updateProduct(existing.id, productData);
+      return this._internalUpdateProduct(existing.id, productData);
     }
 
-    const id = `product-${String(this.getAllProducts().length + 1).padStart(3, '0')}`;
+    const id = productData.id || `product-${String(this.getAllProducts().length + 1).padStart(3, '0')}`;
     const newProduct = {
       id,
       name: productData.name,
@@ -510,7 +516,9 @@ class Store {
       images: Array.isArray(productData.images) && productData.images.length > 0 ? productData.images : (productData.thumbnail || productData.imageUrl ? [productData.thumbnail || productData.imageUrl] : []),
       thumbnail: productData.thumbnail || productData.imageUrl || (productData.images && productData.images[0]) || "",
       video: productData.video || null,
-      audio: productData.audio || productData.song || null,
+      musicUrl: productData.musicUrl || productData.audio || productData.song || null,
+      audio: productData.musicUrl || productData.audio || productData.song || null,
+      song: productData.musicUrl || productData.audio || productData.song || null,
       shortDescription: productData.shortDescription || productData.description || "",
       description: productData.description || "",
       rating: productData.rating !== undefined ? Number(productData.rating) : 5.0,
@@ -524,11 +532,12 @@ class Store {
 
     this.sellerProducts.unshift(newProduct);
     this.saveToStorage(STORAGE_KEYS.SELLER_PRODUCTS, this.sellerProducts);
-    this.notify('seller_product_added', { product: newProduct });
     return newProduct;
   }
 
-  updateProduct(id, updatedData) {
+  _internalUpdateProduct(id, updatedData) {
+    const music = updatedData.musicUrl || updatedData.audio || updatedData.song;
+
     // Check if it's in sellerProducts
     const idx = this.sellerProducts.findIndex(p => p.id === id);
     if (idx !== -1) {
@@ -536,21 +545,21 @@ class Store {
       const merged = {
         ...existing,
         ...updatedData,
-        // Preserve or merge images array without losing previous media if not provided
         images: (Array.isArray(updatedData.images) && updatedData.images.length > 0)
           ? updatedData.images
           : (updatedData.thumbnail ? [updatedData.thumbnail] : existing.images),
         thumbnail: updatedData.thumbnail || existing.thumbnail,
         video: updatedData.video !== undefined ? updatedData.video : existing.video,
-        audio: (updatedData.audio || updatedData.song) !== undefined ? (updatedData.audio || updatedData.song) : existing.audio
+        musicUrl: music !== undefined ? music : existing.musicUrl,
+        audio: music !== undefined ? music : existing.audio,
+        song: music !== undefined ? music : existing.song
       };
       this.sellerProducts[idx] = merged;
       this.saveToStorage(STORAGE_KEYS.SELLER_PRODUCTS, this.sellerProducts);
-      this.notify('product_updated', { product: merged });
       return merged;
     }
 
-    // Check if it's in PRODUCTS array
+    // Check if it's in base PRODUCTS array
     const baseProd = PRODUCTS.find(p => p.id === id);
     if (baseProd) {
       const merged = {
@@ -561,10 +570,10 @@ class Store {
           : (updatedData.thumbnail ? [updatedData.thumbnail] : baseProd.images),
         thumbnail: updatedData.thumbnail || baseProd.thumbnail,
         video: updatedData.video !== undefined ? updatedData.video : baseProd.video,
-        audio: (updatedData.audio || updatedData.song) !== undefined ? (updatedData.audio || updatedData.song) : baseProd.audio,
-        song: (updatedData.audio || updatedData.song) !== undefined ? (updatedData.audio || updatedData.song) : baseProd.song
+        musicUrl: music !== undefined ? music : baseProd.musicUrl,
+        audio: music !== undefined ? music : baseProd.audio,
+        song: music !== undefined ? music : baseProd.song
       };
-      // Check if already in sellerProducts
       const sIdx = this.sellerProducts.findIndex(p => p.id === id);
       if (sIdx !== -1) {
         this.sellerProducts[sIdx] = merged;
@@ -572,17 +581,15 @@ class Store {
         this.sellerProducts.unshift(merged);
       }
       this.saveToStorage(STORAGE_KEYS.SELLER_PRODUCTS, this.sellerProducts);
-      this.notify('product_updated', { product: merged });
       return merged;
     }
 
     return null;
   }
 
-  deleteSellerProduct(id) {
+  _internalDeleteProduct(id) {
     this.sellerProducts = this.sellerProducts.filter(p => p.id !== id);
     this.saveToStorage(STORAGE_KEYS.SELLER_PRODUCTS, this.sellerProducts);
-    this.notify('seller_product_deleted', { id });
   }
 
   // --- USER PROFILE & ADDRESSES ---

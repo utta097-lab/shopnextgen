@@ -93,8 +93,61 @@ export function renderAdminProductsPage(container, queryParams = {}) {
       return;
     }
 
-    // 4. Otherwise show Full Authenticated Admin Dashboard
+    // 4. Strict Database Admin Authorization:
+    // If Supabase is configured, access to the admin editor is permitted ONLY IF the database recognizes the user as an authorized admin.
+    if (config.isConfigured && (!currentUser || !isAuthorizedAdmin)) {
+      renderUnauthorizedScreen(currentUser);
+      return;
+    }
+
+    // 5. Otherwise show Full Authenticated Admin Dashboard
     renderDashboard(allProducts, config);
+  }
+
+  // ==========================================================================
+  // VIEW: UNAUTHORIZED SCREEN (ACCOUNT NOT IN shopnex_admins ALLOWLIST)
+  // ==========================================================================
+  function renderUnauthorizedScreen(user) {
+    container.innerHTML = `
+      <div class="snx-container snx-admin-page" style="max-width: 580px; padding: 60px 20px;">
+        <nav class="snx-breadcrumb">
+          <a href="#/">Home</a>
+          <span>/</span>
+          <span class="current">Admin Access Restricted</span>
+        </nav>
+
+        <div class="snx-admin-auth-card" style="text-align: center; padding: 40px 30px;">
+          <div style="font-size: 3rem; margin-bottom: 16px;">🛑</div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--snx-text-main); margin-bottom: 8px;">
+            Access Denied: Not an Authorized Admin
+          </h2>
+          <p style="color: var(--snx-text-muted); font-size: 0.9375rem; line-height: 1.6; margin-bottom: 20px;">
+            ${user ? `You are signed in as <strong>${user.email || 'user'}</strong>. However, the database does not recognize this account as an authorized SHOPNEX administrator in <code>public.shopnex_admins</code>.` : 'You must be signed in as a verified SHOPNEX administrator to access this area.'}
+          </p>
+          <div class="snx-alert-box error" style="margin-bottom: 24px; text-align: left; font-size: 0.8125rem;">
+            <strong>Database Security:</strong> All write permissions (creating/editing products and uploading shared music) are strictly enforced at the database level by Supabase Row Level Security.
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="snx-btn snx-btn-secondary" id="snx-unauth-logout-btn">
+              Sign Out & Switch Account
+            </button>
+            <a href="#/" class="snx-btn snx-btn-primary" style="text-decoration: none;">
+              Return to Storefront
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const logoutBtn = container.querySelector('#snx-unauth-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        await signOutAdmin();
+        currentUser = null;
+        isAuthorizedAdmin = false;
+        render();
+      });
+    }
   }
 
   // ==========================================================================
@@ -204,9 +257,11 @@ export function renderAdminProductsPage(container, queryParams = {}) {
               <button type="submit" class="snx-btn snx-btn-primary" style="flex: 2; padding: 12px;">
                 Save Configuration & Test Connection
               </button>
-              <button type="button" class="snx-btn snx-btn-secondary" id="snx-demo-bypass-btn" style="flex: 1;" title="Proceed in local admin mode">
-                Local Admin Mode →
-              </button>
+              ${!config.isConfigured ? `
+                <button type="button" class="snx-btn snx-btn-secondary" id="snx-demo-bypass-btn" style="flex: 1;" title="Proceed in local admin mode">
+                  Local Admin Mode →
+                </button>
+              ` : ''}
             </div>
           </form>
         </div>
@@ -434,13 +489,23 @@ export function renderAdminProductsPage(container, queryParams = {}) {
 
         try {
           const authData = await signInAdmin(email, password);
-          currentUser = authData.user || { email };
-          isAuthorizedAdmin = await checkIsAdmin();
-          if (isAuthorizedAdmin) {
-            showToast('Admin sign-in successful! Verified admin permissions.', 'success');
-          } else {
-            showToast('Signed in, but account is pending registration in shopnex_admins.', 'warning');
+          const user = authData.user || { email };
+          const authorized = await checkIsAdmin();
+
+          if (!authorized) {
+            await signOutAdmin();
+            currentUser = null;
+            isAuthorizedAdmin = false;
+            errBox.textContent = `Access Denied: Account "${email}" authenticated with Supabase, but is not recognized as an authorized admin in public.shopnex_admins. Only verified SHOPNEX administrators can access the Product & Music Editor.`;
+            errBox.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In to Admin Dashboard →';
+            return;
           }
+
+          currentUser = user;
+          isAuthorizedAdmin = true;
+          showToast('Admin sign-in successful! Verified admin permissions.', 'success');
           activeTab = 'products';
           render();
         } catch (err) {
@@ -460,6 +525,11 @@ export function renderAdminProductsPage(container, queryParams = {}) {
 
     if (bypassBtn) {
       bypassBtn.addEventListener('click', () => {
+        const config = getSupabaseConfig();
+        if (config.isConfigured) {
+          showToast('Database is configured. Please sign in with your authorized admin credentials.', 'warning');
+          return;
+        }
         currentUser = { email: 'admin@local' };
         isAuthorizedAdmin = true;
         activeTab = 'products';

@@ -112,8 +112,9 @@ SHOPNEX enforces a strict database-level security model:
 If your database is already set up and running, simply run [`supabase_security_migration.sql`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/supabase_security_migration.sql) in your **Supabase SQL Editor**:
 1. Open your project in [Supabase Dashboard](https://supabase.com).
 2. Go to **SQL Editor** on the left menu.
-3. Paste the contents of `supabase_security_migration.sql` and click **Run**.
-4. This safely creates `public.shopnex_admins`, the `is_admin()` function, updates the RLS policies, and automatically registers your existing user in `auth.users` as an authorized admin without deleting any product data or music files!
+3. Paste the contents of `supabase_security_migration.sql`.
+4. Replace `PASTE_YOUR_EXACT_ADMIN_UUID_HERE` with your admin user UUID from **Authentication > Users** (or use your admin email), then click **Run**.
+5. This safely creates `public.shopnex_admins`, the `is_admin()` function, removes all old permissive policies, and enforces strict admin-only policies without deleting any product data or music files!
 
 ---
 

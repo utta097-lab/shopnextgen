@@ -21,6 +21,7 @@ import {
   signInAdmin,
   signOutAdmin,
   getAdminUser,
+  checkIsAdmin,
   testConnection,
   saveRemoteProduct,
   deleteRemoteProduct,
@@ -36,6 +37,7 @@ let activePreviewAudio = null;
 export function renderAdminProductsPage(container, queryParams = {}) {
   let activeTab = queryParams.tab || 'products'; // 'products', 'login', 'settings'
   let currentUser = null;
+  let isAuthorizedAdmin = false;
   let connectionInfo = { connected: false, message: 'Checking connection...' };
   let isCheckingAuth = true;
 
@@ -48,6 +50,10 @@ export function renderAdminProductsPage(container, queryParams = {}) {
       currentUser = await getAdminUser();
       const testRes = await testConnection();
       connectionInfo = testRes;
+
+      if (currentUser) {
+        isAuthorizedAdmin = await checkIsAdmin();
+      }
     } catch (err) {
       console.warn('Admin init check:', err);
     } finally {
@@ -69,20 +75,25 @@ export function renderAdminProductsPage(container, queryParams = {}) {
     const config = getSupabaseConfig();
     const allProducts = store.getAllProducts();
 
-    // 1. If not logged in and Supabase is configured: show Admin Login
-    // (Or if tab === 'login')
+    // 1. If explicit settings tab: show Backend Settings
+    if (activeTab === 'settings') {
+      renderSetupAndLoginForm();
+      return;
+    }
+
+    // 2. If not logged in and Supabase is configured: show Admin Login (or if tab === 'login')
     if (!currentUser && (activeTab === 'login' || config.isConfigured)) {
       renderLoginForm();
       return;
     }
 
-    // 2. If Supabase is not yet configured and no user: show Quick Setup / Onboarding
+    // 3. If Supabase is not yet configured and no user: show Quick Setup / Onboarding
     if (!config.isConfigured && !currentUser) {
       renderSetupAndLoginForm();
       return;
     }
 
-    // 3. Otherwise show Full Authenticated Admin Dashboard
+    // 4. Otherwise show Full Authenticated Admin Dashboard
     renderDashboard(allProducts, config);
   }
 
@@ -225,7 +236,9 @@ export function renderAdminProductsPage(container, queryParams = {}) {
           <div class="snx-admin-title-group">
             <div style="display: flex; align-items: center; gap: 10px;">
               <h1 class="snx-admin-title">Admin Product & Music Editor</h1>
-              <span class="snx-badge snx-badge-deal" style="font-size: 0.75rem;">ADMIN SECURE</span>
+              <span class="snx-badge" style="font-size: 0.75rem; background: ${isAuthorizedAdmin ? '#059669' : '#f59e0b'}; color: #fff; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                ${isAuthorizedAdmin ? '🛡️ ADMIN AUTHORIZED' : '⚠️ RLS RESTRICTED'}
+              </span>
             </div>
             <p class="snx-admin-subtitle">
               Manage products, prices, and upload shared theme songs stored centrally for all visitors.
@@ -247,6 +260,15 @@ export function renderAdminProductsPage(container, queryParams = {}) {
             </button>
           </div>
         </div>
+
+        ${currentUser && config.isConfigured && !isAuthorizedAdmin ? `
+          <div class="snx-alert-box error" style="margin-bottom: 20px;">
+            <strong>⚠️ Notice — Account Not in Admin Allowlist:</strong> Signed in as <code>${currentUser.email || 'user'}</code>.
+            While your Supabase login session is authenticated, this user is not yet registered in the <code>public.shopnex_admins</code> table.
+            Database writes (creates, edits, deletes) and music uploads will be rejected by Supabase Row Level Security (RLS).
+            To grant admin access to this user, execute the SQL script in <code>supabase_security_migration.sql</code> in your Supabase SQL Editor.
+          </div>
+        ` : ''}
 
         <!-- Metric Badges Strip -->
         <div class="snx-metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
@@ -275,15 +297,15 @@ export function renderAdminProductsPage(container, queryParams = {}) {
           </div>
 
           <div class="snx-metric-card">
-            <div class="snx-metric-icon" style="background: ${connectionInfo.connected ? '#ecfdf5' : '#fef3c7'}; color: ${connectionInfo.connected ? '#059669' : '#d97706'};">
-              ${connectionInfo.connected ? '☁️' : '⚠️'}
+            <div class="snx-metric-icon" style="background: ${connectionInfo.connected ? (isAuthorizedAdmin ? '#ecfdf5' : '#fef3c7') : '#fef3c7'}; color: ${connectionInfo.connected ? (isAuthorizedAdmin ? '#059669' : '#d97706') : '#d97706'};">
+              ${connectionInfo.connected ? (isAuthorizedAdmin ? '🛡️' : '⚠️') : '⚠️'}
             </div>
             <div>
               <div class="snx-metric-val" style="font-size: 1rem; font-weight: 800;">
-                ${connectionInfo.connected ? 'Online (Supabase)' : 'Local Storage Mode'}
+                ${connectionInfo.connected ? (isAuthorizedAdmin ? '🟢 Admin Verified' : '🟡 Unverified Admin') : 'Local Storage Mode'}
               </div>
               <div class="snx-metric-label" style="font-size: 0.75rem;">
-                ${connectionInfo.connected ? 'Storage & DB Connected' : 'Click ⚙️ to configure shared storage'}
+                ${connectionInfo.connected ? (isAuthorizedAdmin ? 'Full Database & Storage RLS' : 'Missing from shopnex_admins') : 'Click ⚙️ to configure shared storage'}
               </div>
             </div>
           </div>
@@ -413,7 +435,13 @@ export function renderAdminProductsPage(container, queryParams = {}) {
         try {
           const authData = await signInAdmin(email, password);
           currentUser = authData.user || { email };
-          showToast('Admin sign-in successful!', 'success');
+          isAuthorizedAdmin = await checkIsAdmin();
+          if (isAuthorizedAdmin) {
+            showToast('Admin sign-in successful! Verified admin permissions.', 'success');
+          } else {
+            showToast('Signed in, but account is pending registration in shopnex_admins.', 'warning');
+          }
+          activeTab = 'products';
           render();
         } catch (err) {
           errBox.textContent = `Login failed: ${err.message}`;
@@ -433,6 +461,8 @@ export function renderAdminProductsPage(container, queryParams = {}) {
     if (bypassBtn) {
       bypassBtn.addEventListener('click', () => {
         currentUser = { email: 'admin@local' };
+        isAuthorizedAdmin = true;
+        activeTab = 'products';
         showToast('Running in local admin mode. (Remember to configure Supabase for shared multi-visitor storage)', 'info');
         render();
       });
@@ -561,9 +591,13 @@ export function renderAdminProductsPage(container, queryParams = {}) {
           const prod = store.getProductById(id);
           const name = prod ? prod.name : id;
           if (confirm(`Are you sure you want to delete "${name}" from the product database?`)) {
-            await store.deleteProduct(id);
-            showToast(`Deleted ${name}`, 'info');
-            render();
+            try {
+              await store.deleteProduct(id);
+              showToast(`Deleted ${name}`, 'info');
+              render();
+            } catch (err) {
+              showToast(`Failed to delete: ${err.message}`, 'error');
+            }
           }
           return;
         }

@@ -217,6 +217,9 @@ export async function saveRemoteProduct(productData) {
     .single();
 
   if (error) {
+    if (error.code === '42501' || (error.message && error.message.toLowerCase().includes('row-level security'))) {
+      throw new Error('Permission Denied: Your account is not authorized as a SHOPNEX administrator. Database write access is restricted to verified admins in shopnex_admins.');
+    }
     throw error;
   }
 
@@ -238,6 +241,9 @@ export async function deleteRemoteProduct(productId) {
     .eq('id', productId);
 
   if (error) {
+    if (error.code === '42501' || (error.message && error.message.toLowerCase().includes('row-level security'))) {
+      throw new Error('Permission Denied: Your account is not authorized as a SHOPNEX administrator. Product deletion is restricted to verified admins in shopnex_admins.');
+    }
     throw error;
   }
 
@@ -260,6 +266,9 @@ export async function syncBaseProductsToSupabase(baseProducts) {
     .upsert(rows, { onConflict: 'id' });
 
   if (error) {
+    if (error.code === '42501' || (error.message && error.message.toLowerCase().includes('row-level security'))) {
+      throw new Error('Permission Denied: Your account is not authorized as a SHOPNEX administrator. Database write access is restricted to verified admins in shopnex_admins.');
+    }
     throw error;
   }
 
@@ -325,8 +334,13 @@ export async function uploadProductMusic(file, productId, onProgress = null) {
     if (error.message && error.message.toLowerCase().includes('bucket not found')) {
       throw new Error(`Storage bucket "${bucketName}" not found. Please run the SQL schema in supabase_schema.sql to create it.`);
     }
-    if (error.message && error.message.toLowerCase().includes('row-level security')) {
-      throw new Error('Storage upload permission denied. Make sure you are logged into Admin, or check Storage RLS policies.');
+    if (
+      (error.message && error.message.toLowerCase().includes('row-level security')) ||
+      error.statusCode === 403 ||
+      error.status === 403 ||
+      error.error === 'Unauthorized'
+    ) {
+      throw new Error('Storage Permission Denied: Your account is not authorized as a SHOPNEX administrator. Music upload is restricted to verified admins in shopnex_admins.');
     }
     throw error;
   }
@@ -374,17 +388,29 @@ export async function deleteProductMusic(musicUrl) {
     }
 
     if (relativePath) {
-      await sb.storage.from(bucketName).remove([relativePath]);
+      const { data, error } = await sb.storage.from(bucketName).remove([relativePath]);
+      if (error) {
+        console.warn('Could not remove file from storage:', error);
+        if (
+          (error.message && error.message.toLowerCase().includes('row-level security')) ||
+          error.statusCode === 403 ||
+          error.status === 403
+        ) {
+          throw new Error('Storage Permission Denied: Only authorized SHOPNEX admins can delete music files.');
+        }
+        return false;
+      }
       return true;
     }
   } catch (err) {
     console.warn('Could not remove file from storage:', err);
+    throw err;
   }
   return false;
 }
 
 // ============================================================================
-// 3. ADMIN AUTHENTICATION (SUPABASE AUTH)
+// 3. ADMIN AUTHENTICATION (SUPABASE AUTH & AUTHORIZATION)
 // ============================================================================
 
 /**
@@ -429,6 +455,48 @@ export async function getAdminUser() {
     return session ? session.user : null;
   } catch (err) {
     return null;
+  }
+}
+
+/**
+ * Verifies if the currently authenticated user is an authorized SHOPNEX administrator
+ * Checked securely against the server-side shopnex_admins table and is_admin() function.
+ */
+export async function checkIsAdmin() {
+  const sb = await getSupabase();
+  if (!sb) return false;
+
+  try {
+    const user = await getAdminUser();
+    if (!user) return false;
+
+    // 1. Try server-side RPC function check_is_admin()
+    const { data: rpcIsAdmin, error: rpcErr } = await sb.rpc('check_is_admin');
+    if (!rpcErr && typeof rpcIsAdmin === 'boolean') {
+      return rpcIsAdmin;
+    }
+
+    // 2. Try is_admin() RPC
+    const { data: isAdm, error: admErr } = await sb.rpc('is_admin');
+    if (!admErr && typeof isAdm === 'boolean') {
+      return isAdm;
+    }
+
+    // 3. Fallback query directly against shopnex_admins table using auth.uid()
+    const { data, error } = await sb
+      .from('shopnex_admins')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.warn('Error checking admin authorization status:', err);
+    return false;
   }
 }
 

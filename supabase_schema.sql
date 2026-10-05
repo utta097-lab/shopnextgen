@@ -39,7 +39,67 @@ CREATE TABLE IF NOT EXISTS public.products (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Enable Row Level Security (RLS) on Products Table
+-- 2. Create Dedicated Admin Allowlist Table
+CREATE TABLE IF NOT EXISTS public.shopnex_admins (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT,
+  role TEXT NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS on shopnex_admins
+ALTER TABLE public.shopnex_admins ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can view admin status" ON public.shopnex_admins;
+CREATE POLICY "Admins can view admin status"
+  ON public.shopnex_admins
+  FOR SELECT
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+-- 3. Security Definer Helper Functions: is_admin() & check_is_admin()
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  RETURN EXISTS (
+    SELECT 1
+    FROM public.shopnex_admins
+    WHERE user_id = auth.uid()
+  );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.check_is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT public.is_admin();
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
+
+REVOKE EXECUTE ON FUNCTION public.check_is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.check_is_admin() TO authenticated, anon;
+
+-- Auto-register any existing user in auth.users as admin:
+INSERT INTO public.shopnex_admins (user_id, email, role)
+SELECT id, email, 'admin'
+FROM auth.users
+ON CONFLICT (user_id) DO NOTHING;
+
+-- 4. Enable Row Level Security (RLS) on Products Table
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if re-running
@@ -47,6 +107,9 @@ DROP POLICY IF EXISTS "Public can view all products" ON public.products;
 DROP POLICY IF EXISTS "Authenticated admin can insert products" ON public.products;
 DROP POLICY IF EXISTS "Authenticated admin can update products" ON public.products;
 DROP POLICY IF EXISTS "Authenticated admin can delete products" ON public.products;
+DROP POLICY IF EXISTS "Only authorized admin can insert products" ON public.products;
+DROP POLICY IF EXISTS "Only authorized admin can update products" ON public.products;
+DROP POLICY IF EXISTS "Only authorized admin can delete products" ON public.products;
 
 -- RLS Policy: Anyone (visitors & customers) can view products and read music_url
 CREATE POLICY "Public can view all products"
@@ -55,29 +118,29 @@ CREATE POLICY "Public can view all products"
   TO public
   USING (true);
 
--- RLS Policy: Only authenticated admin can insert products
-CREATE POLICY "Authenticated admin can insert products"
+-- RLS Policy: ONLY authorized SHOPNEX admins can insert products
+CREATE POLICY "Only authorized admin can insert products"
   ON public.products
   FOR INSERT
   TO authenticated
-  WITH CHECK (true);
+  WITH CHECK (public.is_admin());
 
--- RLS Policy: Only authenticated admin can update products
-CREATE POLICY "Authenticated admin can update products"
+-- RLS Policy: ONLY authorized SHOPNEX admins can update products
+CREATE POLICY "Only authorized admin can update products"
   ON public.products
   FOR UPDATE
   TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- RLS Policy: Only authenticated admin can delete products
-CREATE POLICY "Authenticated admin can delete products"
+-- RLS Policy: ONLY authorized SHOPNEX admins can delete products
+CREATE POLICY "Only authorized admin can delete products"
   ON public.products
   FOR DELETE
   TO authenticated
-  USING (true);
+  USING (public.is_admin());
 
--- 3. Create Storage Bucket for Product Music (if not exists)
+-- 5. Create Storage Bucket for Product Music (if not exists)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'product-music',
@@ -90,12 +153,15 @@ ON CONFLICT (id) DO UPDATE SET
   public = true,
   file_size_limit = 52428800;
 
--- 4. Storage Policies for "product-music" Bucket
+-- 6. Storage Policies for "product-music" Bucket
 -- Drop existing policies if re-running
 DROP POLICY IF EXISTS "Public can listen to product music" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated admin can upload product music" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated admin can update product music" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated admin can delete product music" ON storage.objects;
+DROP POLICY IF EXISTS "Only authorized admin can upload product music" ON storage.objects;
+DROP POLICY IF EXISTS "Only authorized admin can update product music" ON storage.objects;
+DROP POLICY IF EXISTS "Only authorized admin can delete product music" ON storage.objects;
 
 -- RLS Policy: Public read access for audio files in product-music bucket
 CREATE POLICY "Public can listen to product music"
@@ -104,29 +170,29 @@ CREATE POLICY "Public can listen to product music"
   TO public
   USING (bucket_id = 'product-music');
 
--- RLS Policy: Only authenticated admin can upload audio files
-CREATE POLICY "Authenticated admin can upload product music"
+-- RLS Policy: ONLY authorized SHOPNEX admins can upload audio files
+CREATE POLICY "Only authorized admin can upload product music"
   ON storage.objects
   FOR INSERT
   TO authenticated
-  WITH CHECK (bucket_id = 'product-music');
+  WITH CHECK (bucket_id = 'product-music' AND public.is_admin());
 
--- RLS Policy: Only authenticated admin can update audio files
-CREATE POLICY "Authenticated admin can update product music"
+-- RLS Policy: ONLY authorized SHOPNEX admins can update audio files
+CREATE POLICY "Only authorized admin can update product music"
   ON storage.objects
   FOR UPDATE
   TO authenticated
-  USING (bucket_id = 'product-music')
-  WITH CHECK (bucket_id = 'product-music');
+  USING (bucket_id = 'product-music' AND public.is_admin())
+  WITH CHECK (bucket_id = 'product-music' AND public.is_admin());
 
--- RLS Policy: Only authenticated admin can delete audio files
-CREATE POLICY "Authenticated admin can delete product music"
+-- RLS Policy: ONLY authorized SHOPNEX admins can delete audio files
+CREATE POLICY "Only authorized admin can delete product music"
   ON storage.objects
   FOR DELETE
   TO authenticated
-  USING (bucket_id = 'product-music');
+  USING (bucket_id = 'product-music' AND public.is_admin());
 
--- 5. Seed Base Products into Supabase
+-- 7. Seed Base Products into Supabase
 INSERT INTO public.products (
   id, name, category, price, original_price, discount,
   image, images, thumbnail, music_url, audio,

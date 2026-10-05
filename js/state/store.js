@@ -5,6 +5,7 @@
 
 import { PRODUCTS } from '../data/products.js';
 import { fetchRemoteProducts, saveRemoteProduct, deleteRemoteProduct } from '../services/supabaseService.js';
+import { getSupabaseConfig } from '../config/supabaseConfig.js';
 
 const STORAGE_KEYS = {
   CART: 'shopnex_custom_cart_v2',
@@ -180,18 +181,24 @@ class Store {
    */
   async saveProduct(productData) {
     let savedRemote = null;
-    try {
-      savedRemote = await saveRemoteProduct(productData);
-      if (savedRemote) {
-        const idx = this.remoteProducts.findIndex(p => p.id === savedRemote.id);
-        if (idx !== -1) {
-          this.remoteProducts[idx] = savedRemote;
-        } else {
-          this.remoteProducts.push(savedRemote);
+    const config = getSupabaseConfig();
+
+    if (config.isConfigured) {
+      try {
+        savedRemote = await saveRemoteProduct(productData);
+        if (savedRemote) {
+          const idx = this.remoteProducts.findIndex(p => p.id === savedRemote.id);
+          if (idx !== -1) {
+            this.remoteProducts[idx] = savedRemote;
+          } else {
+            this.remoteProducts.push(savedRemote);
+          }
         }
+      } catch (err) {
+        console.error('Central database save error:', err);
+        // Propagate error to caller (e.g. permission denied) so UI presents feedback to user
+        throw err;
       }
-    } catch (err) {
-      console.warn('Central database save fallback:', err.message);
     }
 
     // Also update local store
@@ -215,11 +222,15 @@ class Store {
    * Delete product from central database and local store
    */
   async deleteProduct(productId) {
-    try {
-      await deleteRemoteProduct(productId);
-      this.remoteProducts = this.remoteProducts.filter(p => p.id !== productId);
-    } catch (err) {
-      console.warn('Central database delete fallback:', err.message);
+    const config = getSupabaseConfig();
+    if (config.isConfigured) {
+      try {
+        await deleteRemoteProduct(productId);
+        this.remoteProducts = this.remoteProducts.filter(p => p.id !== productId);
+      } catch (err) {
+        console.error('Central database delete error:', err);
+        throw err;
+      }
     }
 
     this.deleteSellerProduct(productId);

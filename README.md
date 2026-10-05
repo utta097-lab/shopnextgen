@@ -91,14 +91,41 @@ SHOPNEX includes a protected **Admin Product Editor** and **Central Shared Music
 
 ---
 
-### 🚀 How to Set Up Supabase (1-Time Setup)
+### 🔒 Hardened Security & Permission Model
+
+SHOPNEX enforces a strict database-level security model:
+- **Public / Normal Visitors**:
+  - `SELECT` permission on `public.products` (can view all products and read `music_url`).
+  - Public read access on `storage.objects` for bucket `'product-music'` (can stream and listen to assigned music).
+  - Strictly blocked by database RLS from creating, editing, or deleting products.
+  - Strictly blocked from uploading, replacing, or deleting audio files in Supabase Storage.
+- **SHOPNEX Admins**:
+  - Full `INSERT`, `UPDATE`, and `DELETE` permissions on `public.products`.
+  - Full `INSERT`, `UPDATE`, and `DELETE` permissions on `storage.objects` for `'product-music'`.
+  - Authorized server-side via the dedicated `public.shopnex_admins` table and `public.is_admin()` Security Definer function.
+  - Ordinary authenticated users who are not in `shopnex_admins` cannot modify products or music.
+
+---
+
+### 🛡️ How to Apply the Security Migration (Existing Supabase Project)
+
+If your database is already set up and running, simply run [`supabase_security_migration.sql`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/supabase_security_migration.sql) in your **Supabase SQL Editor**:
+1. Open your project in [Supabase Dashboard](https://supabase.com).
+2. Go to **SQL Editor** on the left menu.
+3. Paste the contents of `supabase_security_migration.sql` and click **Run**.
+4. This safely creates `public.shopnex_admins`, the `is_admin()` function, updates the RLS policies, and automatically registers your existing user in `auth.users` as an authorized admin without deleting any product data or music files!
+
+---
+
+### 🚀 How to Set Up Supabase (From Scratch)
 
 1. Create a free account at [Supabase](https://supabase.com) and create a new project.
 2. Open your project's **SQL Editor** (`/sql`).
 3. Paste and run the entire contents of [`supabase_schema.sql`](file:///c:/Users/SOHAM%20DUTTA/Desktop/New%20folder/web%20project%201/supabase_schema.sql).
-   - This creates the `products` table with Row Level Security (RLS).
+   - This creates `products` and `shopnex_admins` tables with Row Level Security (RLS).
+   - Sets up `is_admin()` Security Definer authorization.
    - Creates the `product-music` Storage bucket with public read access.
-   - Configures storage policies so only authenticated admins can upload/delete audio.
+   - Configures storage policies so only authorized SHOPNEX admins can upload/delete audio.
    - Automatically seeds the initial base products into the database.
 4. Go to **Project Settings → API** in Supabase and copy:
    - **Project URL** (e.g. `https://your-project.supabase.co`)
